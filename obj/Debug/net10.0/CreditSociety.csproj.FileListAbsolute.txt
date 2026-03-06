@@ -1,0 +1,8 @@
+C:\Users\DELL\OneDrive\Desktop\CreditSociety\obj\Debug\net10.0\CreditSociety.csproj.AssemblyReference.cache
+C:\Users\DELL\OneDrive\Desktop\CreditSociety\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\DELL\OneDrive\Desktop\CreditSociety\obj\Debug\net10.0\CreditSociety.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\DELL\OneDrive\Desktop\CreditSociety\obj\Debug\net10.0\CreditSociety.AssemblyInfoInputs.cache
+C:\Users\DELL\OneDrive\Desktop\CreditSociety\obj\Debug\net10.0\CreditSociety.AssemblyInfo.cs
+C:\Users\DELL\OneDrive\Desktop\CreditSociety\obj\Debug\net10.0\CreditSociety.csproj.CoreCompileInputs.cache
+C:\Users\DELL\OneDrive\Desktop\CreditSociety\obj\Debug\net10.0\CreditSociety.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\DELL\OneDrive\Desktop\CreditSociety\obj\Debug\net10.0\CreditSociety.MvcApplicationPartsAssemblyInfo.cache
