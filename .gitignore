@@ -1,0 +1,16 @@
+# .NET Core
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+.vs/
+.vscode/
+
+# Database connection strings
+appsettings.json
+appsettings.Development.json
+
+# Logs
+*.log
+logs/
