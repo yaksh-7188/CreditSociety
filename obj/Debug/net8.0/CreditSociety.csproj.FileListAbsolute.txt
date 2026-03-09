@@ -52,3 +52,4 @@ C:\Users\DELL\OneDrive\Desktop\CreditSociety\obj\Debug\net8.0\refint\CreditSocie
 C:\Users\DELL\OneDrive\Desktop\CreditSociety\obj\Debug\net8.0\CreditSociety.pdb
 C:\Users\DELL\OneDrive\Desktop\CreditSociety\obj\Debug\net8.0\CreditSociety.genruntimeconfig.cache
 C:\Users\DELL\OneDrive\Desktop\CreditSociety\obj\Debug\net8.0\ref\CreditSociety.dll
+C:\Users\DELL\OneDrive\Desktop\CreditSociety\obj\Debug\net8.0\CreditSociety.sourcelink.json
