@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
+using CreditSociety;
 
 namespace CreditSociety.Controllers;
 
@@ -15,7 +16,6 @@ public class MonthlyCollectionController : ControllerBase
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
 
-            // Get all active members
             var members = new List<int>();
             string memberQuery = "SELECT Id FROM creditsocietydb_users WHERE Role = 'Member'";
             using (var memberCmd = new MySqlCommand(memberQuery, conn))
@@ -25,7 +25,6 @@ public class MonthlyCollectionController : ControllerBase
                     members.Add(reader.GetInt32("Id"));
             }
 
-            // Insert monthly EMI for each member
             foreach (var memberId in members)
             {
                 string checkQuery = "SELECT COUNT(*) FROM monthly_emi WHERE member_id = @MemberId AND month_year = @MonthYear";
@@ -100,6 +99,48 @@ public class MonthlyCollectionController : ControllerBase
         }
     }
 
+    [HttpGet("all")]
+    public IActionResult GetAllMonthlyEMI()
+    {
+        try
+        {
+            using var conn = DatabaseHelper.GetConnection();
+            conn.Open();
+
+            string query = @"
+                SELECT m.*, u.FullName as member_name 
+                FROM monthly_emi m
+                JOIN creditsocietydb_users u ON m.member_id = u.Id
+                ORDER BY m.month_year DESC, u.FullName";
+
+            using var cmd = new MySqlCommand(query, conn);
+            using var reader = cmd.ExecuteReader();
+
+            var list = new List<object>();
+            while (reader.Read())
+            {
+                list.Add(new
+                {
+                    id = reader["id"],
+                    member_id = reader["member_id"],
+                    member_name = reader["member_name"]?.ToString() ?? "",
+                    amount = Convert.ToDecimal(reader["amount"]),
+                    paid_amount = Convert.ToDecimal(reader["paid_amount"]),
+                    payment_date = reader["payment_date"] == DBNull.Value ? null : Convert.ToDateTime(reader["payment_date"]).ToString("yyyy-MM-dd"),
+                    payment_mode = reader["payment_mode"]?.ToString() ?? "",
+                    status = reader["status"]?.ToString() ?? "Pending",
+                    late_fee = Convert.ToDecimal(reader["late_fee"])
+                });
+            }
+
+            return Ok(list);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Server error: " + ex.Message });
+        }
+    }
+
     [HttpPut("update/{id}")]
     public IActionResult UpdateMonthlyEMI(int id, [FromBody] UpdateEMIModel model)
     {
@@ -108,7 +149,6 @@ public class MonthlyCollectionController : ControllerBase
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
 
-            // Determine status
             string status = "Pending";
             if (model.PaidAmount >= 1000)
                 status = "Paid";
@@ -173,7 +213,6 @@ public class MonthlyCollectionController : ControllerBase
     }
 }
 
-// Model classes with nullable properties
 public class MonthYearModel
 {
     public string? MonthYear { get; set; }

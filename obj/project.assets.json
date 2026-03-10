@@ -1743,11 +1743,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\DELL\\OneDrive\\Desktop\\CreditSociety\\CreditSociety.csproj",
+      "projectUniqueName": "c:\\Users\\DELL\\OneDrive\\Desktop\\CreditSociety\\CreditSociety.csproj",
       "projectName": "CreditSociety",
-      "projectPath": "C:\\Users\\DELL\\OneDrive\\Desktop\\CreditSociety\\CreditSociety.csproj",
+      "projectPath": "c:\\Users\\DELL\\OneDrive\\Desktop\\CreditSociety\\CreditSociety.csproj",
       "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\DELL\\OneDrive\\Desktop\\CreditSociety\\obj\\",
+      "outputPath": "c:\\Users\\DELL\\OneDrive\\Desktop\\CreditSociety\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config"

@@ -4,8 +4,7 @@ namespace CreditSociety;
 
 public static class DatabaseHelper
 {
-    // ⚠️ Tamaru MySQL password ahiya set karo
-    private static string connectionString = "Server=localhost;Database=creditsocietydb;UserId=root;Password=Yaksh@7188;";
+    private static string connectionString = "Server=localhost;Database=creditsocietydb;User Id=root;Password=Yaksh@7188;";
 
     public static MySqlConnection GetConnection()
     {

@@ -9,7 +9,6 @@ builder.Services.AddCors(p => p.AddPolicy("cors", policy =>
 
 var app = builder.Build();
 
-// Create tables
 try
 {
     DatabaseHelper.CreateTables();
@@ -20,16 +19,14 @@ catch (Exception ex)
     Console.WriteLine($"❌ Database error: {ex.Message}");
 }
 
+DefaultFilesOptions options = new DefaultFilesOptions();
+options.DefaultFileNames.Clear();
+options.DefaultFileNames.Add("Login.html");
+app.UseDefaultFiles(options);
+app.UseStaticFiles();
+
 app.UseCors("cors");
 app.UseAuthorization();
 app.MapControllers();
-
-// IMPORTANT - Default file set karo
-DefaultFilesOptions options = new DefaultFilesOptions();
-options.DefaultFileNames.Clear();
-options.DefaultFileNames.Add("login.html");  // ← login.html default page
-
-app.UseDefaultFiles(options);
-app.UseStaticFiles();
 
 app.Run();

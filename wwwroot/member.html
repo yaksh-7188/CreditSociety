@@ -38,7 +38,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 16px;
         }
         .sidebar-menu li:hover,
         .sidebar-menu li.active {
@@ -88,14 +87,6 @@
             font-size: 40px;
             font-weight: bold;
         }
-        .profile-info h2 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .profile-info p {
-            color: #666;
-            margin: 5px 0;
-        }
         .card {
             background: white;
             padding: 25px;
@@ -103,11 +94,12 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             margin-bottom: 30px;
         }
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .card h3 {
             margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         table {
             width: 100%;
@@ -120,191 +112,128 @@
         }
         th {
             background: #f8f9fa;
-            color: #333;
-        }
-        .badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
         }
         .badge-success {
             background: #d4edda;
             color: #155724;
+            padding: 5px 10px;
+            border-radius: 20px;
         }
         .badge-warning {
             background: #fff3cd;
             color: #856404;
+            padding: 5px 10px;
+            border-radius: 20px;
         }
         .badge-danger {
             background: #f8d7da;
             color: #721c24;
+            padding: 5px 10px;
+            border-radius: 20px;
         }
-        .progress {
-            height: 10px;
-            background: #e9ecef;
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 5px;
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 5px 10px;
+            border-radius: 20px;
         }
         .loading {
             text-align: center;
             padding: 50px;
             color: #666;
         }
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
         .no-data {
             text-align: center;
             padding: 30px;
             color: #999;
-            font-style: italic;
         }
-        .profile-details {
-            padding: 20px;
-        }
-        .profile-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        .profile-pic-large {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 32px;
-            font-weight: bold;
-            margin-right: 20px;
+        .section-title {
+            margin: 30px 0 15px 0;
+            color: #667eea;
+            border-left: 5px solid #667eea;
+            padding-left: 15px;
         }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <div class="sidebar-header">
-            <h2>🏦 Credit Society</h2>
-            <p id="memberRole">Member Panel</p>
+            <h2>🏦 CS</h2>
+            <p id="memberName">Member</p>
         </div>
         <ul class="sidebar-menu">
-            <li class="active" onclick="showSection('dashboard')">
-                📊 Dashboard
-            </li>
-            <li onclick="showSection('emi-history')">
-                📜 EMI History
-            </li>
-            <li onclick="showSection('my-loans')">
-                💰 My Loans
-            </li>
-            <li onclick="showSection('profile')">
-                👤 Profile
-            </li>
-            <li onclick="logout()">
-                🚪 Logout
-            </li>
+            <li class="active" onclick="showSection('dashboard')">📊 Dashboard</li>
+            <li onclick="showSection('monthly-emi')">📆 Monthly EMI</li>
+            <li onclick="showSection('my-loans')">💰 My Loans</li>
+            <li onclick="showSection('profile')">👤 Profile</li>
+            <li onclick="logout()">🚪 Logout</li>
         </ul>
     </div>
 
     <div class="main-content">
         <!-- Dashboard Section -->
         <div id="dashboard-section">
-            <!-- Profile Card -->
             <div class="profile-card">
                 <div class="profile-pic" id="profilePic">👤</div>
-                <div class="profile-info">
-                    <h2 id="memberName">Loading...</h2>
+                <div>
+                    <h2 id="welcomeName">Loading...</h2>
                     <p id="memberEmail">Loading...</p>
                     <p id="memberPhone">Loading...</p>
                 </div>
             </div>
 
-            <!-- Statistics -->
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div>📊 Total EMI</div>
-                    <h3 id="totalEMI">₹0</h3>
-                </div>
-                <div class="stat-card">
-                    <div>✅ Paid EMI</div>
-                    <h3 id="paidEMI">₹0</h3>
-                </div>
-                <div class="stat-card">
-                    <div>⏳ Remaining EMI</div>
-                    <h3 id="remainingEMI">₹0</h3>
-                </div>
-                <div class="stat-card">
-                    <div>💰 Active Loans</div>
-                    <h3 id="activeLoans">0</h3>
-                </div>
-            </div>
-
-            <!-- EMI Progress -->
+            <!-- Loan Summary Card -->
             <div class="card">
-                <h3>📈 EMI Progress</h3>
-                <div id="emiProgressContainer">
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        <p>Loading EMI data...</p>
+                <h3>💰 Loan Summary</h3>
+                <div class="stats-container" style="grid-template-columns: repeat(2, 1fr);">
+                    <div class="stat-card">
+                        <div>Total Loan Amount</div>
+                        <h3 id="totalLoanAmount">₹0</h3>
+                    </div>
+                    <div class="stat-card">
+                        <div>Active Loans</div>
+                        <h3 id="activeLoans">0</h3>
                     </div>
                 </div>
             </div>
 
-            <!-- Recent EMI -->
+            <!-- Monthly EMI Summary Card -->
             <div class="card">
-                <h3>🕒 Recent EMI Transactions</h3>
-                <table id="recentEMITable">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td colspan="3" class="loading">Loading...</td></tr>
-                    </tbody>
-                </table>
+                <h3>📆 Monthly Collection Summary</h3>
+                <div class="stats-container" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="stat-card">
+                        <div>Total Monthly EMI</div>
+                        <h3 id="totalMonthlyEMI">₹0</h3>
+                    </div>
+                    <div class="stat-card">
+                        <div>Paid</div>
+                        <h3 id="paidMonthlyEMI">₹0</h3>
+                    </div>
+                    <div class="stat-card">
+                        <div>Pending</div>
+                        <h3 id="pendingMonthlyEMI">₹0</h3>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- EMI History Section -->
-        <div id="emi-history-section" style="display: none;">
+        <!-- Monthly EMI Section -->
+        <div id="monthly-emi-section" style="display: none;">
             <div class="card">
-                <h3>📜 Complete EMI History</h3>
-                <table id="emiHistoryTable">
+                <h3>📆 Monthly EMI Collection History</h3>
+                <table id="monthlyEMITable">
                     <thead>
                         <tr>
-                            <th>EMI ID</th>
-                            <th>Total Amount</th>
-                            <th>Paid Amount</th>
-                            <th>Remaining</th>
-                            <th>Interest Rate</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
+                            <th>Month</th>
+                            <th>Amount</th>
+                            <th>Paid</th>
+                            <th>Payment Date</th>
+                            <th>Mode</th>
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr><td colspan="8" class="loading">Loading...</td></tr>
+                    <tbody id="monthlyEMIBody">
+                        <tr><td colspan="6" class="loading">Loading...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -323,11 +252,13 @@
                             <th>Term</th>
                             <th>Start Date</th>
                             <th>End Date</th>
+                            <th>Paid</th>
+                            <th>Remaining</th>
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr><td colspan="7" class="loading">Loading...</td></tr>
+                    <tbody id="loansBody">
+                        <tr><td colspan="9" class="loading">Loading...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -337,441 +268,176 @@
         <div id="profile-section" style="display: none;">
             <div class="card">
                 <h3>👤 Profile Information</h3>
-                <div class="profile-details">
-                    <div class="profile-header">
-                        <div class="profile-pic-large" id="profilePicLarge">👤</div>
-                        <div>
-                            <h2 id="profileFullNameDisplay">Loading...</h2>
-                            <p id="profileRoleDisplay">Member</p>
-                        </div>
-                    </div>
-                    
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <tr>
-                            <th style="width: 150px; padding: 12px; background: #f8f9fa; text-align: left;">Full Name:</th>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;" id="profileFullName">Loading...</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 150px; padding: 12px; background: #f8f9fa; text-align: left;">Username:</th>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;" id="profileUsername">Loading...</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 150px; padding: 12px; background: #f8f9fa; text-align: left;">Email:</th>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;" id="profileEmail">Loading...</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 150px; padding: 12px; background: #f8f9fa; text-align: left;">Phone:</th>
-                            <td style="padding: 12px; border-bottom: 1px solid #ddd;" id="profilePhone">Loading...</td>
-                        </tr>
-                        <tr>
-                            <th style="width: 150px; padding: 12px; background: #f8f9fa; text-align: left;">Member Since:</th>
-                            <td style="padding: 12px;" id="profileJoinDate">Loading...</td>
-                        </tr>
-                    </table>
-                </div>
+                <table>
+                    <tr><th>Full Name:</th><td id="profileFullName">Loading...</td></tr>
+                    <tr><th>Username:</th><td id="profileUsername">Loading...</td></tr>
+                    <tr><th>Email:</th><td id="profileEmail">Loading...</td></tr>
+                    <tr><th>Phone:</th><td id="profilePhone">Loading...</td></tr>
+                    <tr><th>Member Since:</th><td id="profileJoinDate">Loading...</td></tr>
+                </table>
             </div>
         </div>
     </div>
 
     <script>
-        // Global variables
         let memberId = null;
         let memberData = {};
-        let emiData = [];
-        let loansData = [];
+        let monthlyEMI = [];
+        let loans = [];
 
-        // Load data on page load
         window.onload = function() {
-            console.log('Page loaded, getting user data...');
-            
-            // Get user from localStorage
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            console.log('User from storage:', user);
-            
+            let user = JSON.parse(localStorage.getItem('user') || '{}');
             if (user && user.userId) {
                 memberId = user.userId;
-                document.getElementById('memberRole').innerText = `Welcome, ${user.fullName || 'Member'}`;
-                loadMemberData();
+                document.getElementById('memberName').innerText = user.fullName || 'Member';
+                loadAllData();
             } else {
-                // Demo mode - check URL parameter or use default
-                const urlParams = new URLSearchParams(window.location.search);
-                memberId = urlParams.get('id') || 2; // Default to John (ID: 2)
-                console.log('Using demo member ID:', memberId);
-                
-                // Set demo user in localStorage
-                localStorage.setItem('user', JSON.stringify({
-                    userId: memberId,
-                    username: memberId == 2 ? 'john' : memberId == 3 ? 'jane' : 'member',
-                    fullName: memberId == 2 ? 'John Doe' : memberId == 3 ? 'Jane Smith' : 'Member',
-                    role: 'Member'
-                }));
-                
-                loadMemberData();
+                window.location.href = '/Login.html';
             }
         };
 
-        // Load all member data
-        async function loadMemberData() {
-            showLoading();
+        async function loadAllData() {
             await loadMemberDetails();
-            await loadMemberEMI();
-            await loadMemberLoans();
-            hideLoading();
+            await loadMonthlyEMI();
+            await loadLoans();
             updateDashboard();
         }
 
-        // Show loading indicators
-        function showLoading() {
-            // Loading is already shown in HTML
-        }
-
-        // Hide loading indicators
-        function hideLoading() {
-            // Data will replace loading indicators
-        }
-
-        // Load member details
         async function loadMemberDetails() {
             try {
-                console.log('Loading member details for ID:', memberId);
-                const response = await fetch(`/api/Auth/member/${memberId}`);
-                
-                if (response.ok) {
-                    memberData = await response.json();
-                    console.log('Member details loaded:', memberData);
-                } else {
-                    console.log('Member details API failed, using localStorage');
-                    // Try to get from localStorage
-                    const user = JSON.parse(localStorage.getItem('user') || '{}');
-                    if (user.userId == memberId) {
-                        memberData = {
-                            id: user.userId,
-                            fullName: user.fullName || 'Member',
-                            username: user.username || '',
-                            email: user.email || 'member@email.com',
-                            phone: user.phone || '9876543210',
-                            role: user.role || 'Member',
-                            joinDate: new Date().toISOString()
-                        };
-                    } else {
-                        throw new Error('Member not found');
-                    }
+                let res = await fetch(`/api/Member/member/${memberId}`);
+                if (res.ok) {
+                    memberData = await res.json();
+                    updateProfile();
                 }
-            } catch (error) {
-                console.error('Error loading member details:', error);
-                // Fallback demo data based on ID
-                const demoData = {
-                    2: { name: 'John Doe', username: 'john', email: 'john@email.com', phone: '9876543211' },
-                    3: { name: 'Jane Smith', username: 'jane', email: 'jane@email.com', phone: '9876543212' },
-                    8: { name: 'Yaksh Patel', username: 'yaksh', email: 'yaksh@email.com', phone: '9876543213' }
-                };
-                
-                const demo = demoData[memberId] || { 
-                    name: 'Member User', 
-                    username: 'member', 
-                    email: 'member@email.com', 
-                    phone: '9876543210' 
-                };
-                
-                memberData = {
-                    id: memberId,
-                    fullName: demo.name,
-                    username: demo.username,
-                    email: demo.email,
-                    phone: demo.phone,
-                    role: 'Member',
-                    joinDate: new Date().toISOString()
-                };
-            }
-            updateProfileDisplay();
+            } catch (e) { console.error(e); }
         }
 
-        // Load member EMI
-        async function loadMemberEMI() {
+        async function loadMonthlyEMI() {
             try {
-                console.log('Loading EMI for member:', memberId);
-                const response = await fetch(`/api/Auth/member/${memberId}/emi`);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('EMI data received:', data);
-                    emiData = Array.isArray(data) ? data : [];
-                } else {
-                    console.log('No EMI data found, using demo data');
-                    // Demo data for new members
-                    emiData = [{
-                        emiId: 1,
-                        totalAmount: 50000,
-                        paidAmount: 10000,
-                        remainingAmount: 40000,
-                        interestRate: 8.5,
-                        startDate: new Date().toISOString(),
-                        endDate: new Date(new Date().setMonth(new Date().getMonth() + 12)).toISOString(),
-                        status: 'Active'
-                    }];
+                let res = await fetch(`/api/Member/member/${memberId}/emi`);
+                if (res.ok) {
+                    monthlyEMI = await res.json();
+                    displayMonthlyEMI();
                 }
-            } catch (error) {
-                console.error('Error loading EMI:', error);
-                emiData = [];
-            }
+            } catch (e) { console.error(e); }
         }
 
-        // Load member loans
-        async function loadMemberLoans() {
+        async function loadLoans() {
             try {
-                console.log('Loading loans for member:', memberId);
-                const response = await fetch(`/api/Auth/member/${memberId}/loans`);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Loans data received:', data);
-                    loansData = Array.isArray(data) ? data : [];
-                } else {
-                    console.log('No loans data found, using demo data');
-                    // Demo data for new members
-                    loansData = [{
-                        loanId: 1,
-                        loanAmount: 50000,
-                        interestRate: 8.5,
-                        loanTerm: 12,
-                        startDate: new Date().toISOString(),
-                        endDate: new Date(new Date().setMonth(new Date().getMonth() + 12)).toISOString(),
-                        status: 'Active'
-                    }];
+                let res = await fetch(`/api/Member/member/${memberId}/loans`);
+                if (res.ok) {
+                    loans = await res.json();
+                    displayLoans();
                 }
-            } catch (error) {
-                console.error('Error loading loans:', error);
-                loansData = [];
-            }
+            } catch (e) { console.error(e); }
         }
 
-        // Update profile display
-        function updateProfileDisplay() {
-            console.log('Updating profile with data:', memberData);
+        function displayMonthlyEMI() {
+            let tbody = document.getElementById('monthlyEMIBody');
+            if (!monthlyEMI || monthlyEMI.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="no-data">No monthly EMI records found</td></tr>';
+                return;
+            }
             
-            // Update profile card
-            document.getElementById('memberName').innerText = memberData.fullName || 'Member';
+            tbody.innerHTML = monthlyEMI.map(emi => {
+                let statusClass = emi.status === 'Paid' ? 'success' : 
+                                 emi.status === 'Late' ? 'danger' : 'warning';
+                return `<tr>
+                    <td>${emi.monthYear}</td>
+                    <td>₹1000</td>
+                    <td>₹${emi.paidAmount || 0}</td>
+                    <td>${emi.paymentDate || '-'}</td>
+                    <td>${emi.paymentMode || '-'}</td>
+                    <td><span class="badge-${statusClass}">${emi.status || 'Pending'}</span></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function displayLoans() {
+            let tbody = document.getElementById('loansBody');
+            if (!loans || loans.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="no-data">No loans found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = loans.map(loan => {
+                let paid = loan.paidAmount || 0;
+                let remaining = loan.amount - paid;
+                return `<tr>
+                    <td>${loan.loanId}</td>
+                    <td>₹${loan.amount}</td>
+                    <td>${loan.interestRate}%</td>
+                    <td>${loan.term} months</td>
+                    <td>${loan.startDate}</td>
+                    <td>${loan.endDate}</td>
+                    <td>₹${paid}</td>
+                    <td>₹${remaining}</td>
+                    <td><span class="badge-success">${loan.status}</span></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function updateDashboard() {
+            // Calculate loan summary
+            let totalLoanAmount = 0;
+            loans.forEach(loan => totalLoanAmount += loan.amount || 0);
+            
+            document.getElementById('totalLoanAmount').innerText = '₹' + totalLoanAmount;
+            document.getElementById('activeLoans').innerText = loans.length;
+
+            // Calculate monthly EMI summary
+            let totalMonthly = 0, paidMonthly = 0;
+            monthlyEMI.forEach(emi => {
+                totalMonthly += 1000;
+                paidMonthly += emi.paidAmount || 0;
+            });
+            
+            document.getElementById('totalMonthlyEMI').innerText = '₹' + totalMonthly;
+            document.getElementById('paidMonthlyEMI').innerText = '₹' + paidMonthly;
+            document.getElementById('pendingMonthlyEMI').innerText = '₹' + (totalMonthly - paidMonthly);
+        }
+
+        function updateProfile() {
+            document.getElementById('welcomeName').innerText = memberData.fullName || 'Member';
             document.getElementById('memberEmail').innerText = memberData.email || '';
             document.getElementById('memberPhone').innerText = memberData.phone || '';
             
-            // Update profile section
             document.getElementById('profileFullName').innerText = memberData.fullName || '';
-            document.getElementById('profileFullNameDisplay').innerText = memberData.fullName || '';
             document.getElementById('profileUsername').innerText = memberData.username || '';
             document.getElementById('profileEmail').innerText = memberData.email || '';
             document.getElementById('profilePhone').innerText = memberData.phone || '';
-            document.getElementById('profileRoleDisplay').innerText = memberData.role || 'Member';
             
-            // Format join date
             if (memberData.joinDate) {
-                const date = new Date(memberData.joinDate);
+                let date = new Date(memberData.joinDate);
                 document.getElementById('profileJoinDate').innerText = date.toLocaleDateString('en-IN', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-            } else {
-                document.getElementById('profileJoinDate').innerText = new Date().toLocaleDateString('en-IN', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+                    year: 'numeric', month: 'long', day: 'numeric'
                 });
             }
             
-            // Profile pic initials
-            const name = memberData.fullName || 'Member User';
-            const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            let initials = (memberData.fullName || 'M').split(' ').map(n => n[0]).join('').toUpperCase();
             document.getElementById('profilePic').innerText = initials || '👤';
-            document.getElementById('profilePicLarge').innerText = initials || '👤';
         }
 
-        // Update dashboard with EMI and loan data
-        function updateDashboard() {
-            // Calculate totals
-            let totalEMI = 0;
-            let paidEMI = 0;
-            let remainingEMI = 0;
-            
-            emiData.forEach(emi => {
-                totalEMI += Number(emi.totalAmount) || 0;
-                paidEMI += Number(emi.paidAmount) || 0;
-                remainingEMI += Number(emi.remainingAmount) || (Number(emi.totalAmount) - Number(emi.paidAmount)) || 0;
-            });
-            
-            const activeLoans = loansData.filter(loan => loan.status === 'Active').length;
-            
-            // Update stats with proper formatting
-            document.getElementById('totalEMI').innerText = '₹' + totalEMI.toLocaleString('en-IN');
-            document.getElementById('paidEMI').innerText = '₹' + paidEMI.toLocaleString('en-IN');
-            document.getElementById('remainingEMI').innerText = '₹' + remainingEMI.toLocaleString('en-IN');
-            document.getElementById('activeLoans').innerText = activeLoans || loansData.length || 0;
-            
-            // Update EMI progress
-            updateEMIProgress();
-            
-            // Update recent EMI
-            updateRecentEMI();
-            
-            // Update EMI history table
-            updateEMIHistory();
-            
-            // Update loans table
-            updateLoansTable();
-        }
-
-        // Update EMI progress bars
-        function updateEMIProgress() {
-            const container = document.getElementById('emiProgressContainer');
-            
-            if (!emiData || emiData.length === 0) {
-                container.innerHTML = '<div class="no-data">📭 No EMI records found. Contact admin to add EMI.</div>';
-                return;
-            }
-            
-            let html = '';
-            emiData.forEach((emi, index) => {
-                const total = Number(emi.totalAmount) || 0;
-                const paid = Number(emi.paidAmount) || 0;
-                const percent = total > 0 ? Math.round((paid / total) * 100) : 0;
-                
-                html += `
-                    <div style="margin-bottom: 20px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                            <span><strong>EMI #${index + 1}</strong> (${emi.status || 'Active'})</span>
-                            <span>${percent}% Paid</span>
-                        </div>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: ${percent}%"></div>
-                        </div>
-                        <small>₹${paid.toLocaleString('en-IN')} paid of ₹${total.toLocaleString('en-IN')}</small>
-                        <br><small>Interest Rate: ${emi.interestRate || 0}%</small>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-        }
-
-        // Update recent EMI table
-        function updateRecentEMI() {
-            const tbody = document.querySelector('#recentEMITable tbody');
-            
-            if (!emiData || emiData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="no-data">📭 No EMI transactions found</td></tr>';
-                return;
-            }
-            
-            // Sort by date (newest first) and take last 5
-            const recent = [...emiData]
-                .sort((a, b) => new Date(b.startDate || 0) - new Date(a.startDate || 0))
-                .slice(0, 5);
-            
-            tbody.innerHTML = '';
-            recent.forEach(emi => {
-                const date = emi.startDate ? new Date(emi.startDate).toLocaleDateString('en-IN') : 'N/A';
-                const amount = Number(emi.paidAmount) || 0;
-                const status = emi.status || 'Active';
-                
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${date}</td>
-                        <td>₹${amount.toLocaleString('en-IN')}</td>
-                        <td><span class="badge badge-${status === 'Active' ? 'success' : 'warning'}">${status}</span></td>
-                    </tr>
-                `;
-            });
-        }
-
-        // Update EMI history table
-        function updateEMIHistory() {
-            const tbody = document.querySelector('#emiHistoryTable tbody');
-            
-            if (!emiData || emiData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="no-data">📭 No EMI history found</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = '';
-            emiData.forEach(emi => {
-                const remaining = Number(emi.remainingAmount) || (Number(emi.totalAmount) - Number(emi.paidAmount)) || 0;
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${emi.emiId || emi.emiID || 'N/A'}</td>
-                        <td>₹${(Number(emi.totalAmount) || 0).toLocaleString('en-IN')}</td>
-                        <td>₹${(Number(emi.paidAmount) || 0).toLocaleString('en-IN')}</td>
-                        <td>₹${remaining.toLocaleString('en-IN')}</td>
-                        <td>${emi.interestRate || 0}%</td>
-                        <td>${emi.startDate ? new Date(emi.startDate).toLocaleDateString('en-IN') : 'N/A'}</td>
-                        <td>${emi.endDate ? new Date(emi.endDate).toLocaleDateString('en-IN') : 'N/A'}</td>
-                        <td><span class="badge badge-${emi.status === 'Active' ? 'success' : 'warning'}">${emi.status || 'Active'}</span></td>
-                    </tr>
-                `;
-            });
-        }
-
-        // Update loans table
-        function updateLoansTable() {
-            const tbody = document.querySelector('#loansTable tbody');
-            
-            if (!loansData || loansData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="no-data">📭 No loans found</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = '';
-            loansData.forEach(loan => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${loan.loanId || loan.loanID || 'N/A'}</td>
-                        <td>₹${(Number(loan.loanAmount) || 0).toLocaleString('en-IN')}</td>
-                        <td>${loan.interestRate || 0}%</td>
-                        <td>${loan.loanTerm || 0} months</td>
-                        <td>${loan.startDate ? new Date(loan.startDate).toLocaleDateString('en-IN') : 'N/A'}</td>
-                        <td>${loan.endDate ? new Date(loan.endDate).toLocaleDateString('en-IN') : 'N/A'}</td>
-                        <td><span class="badge badge-${loan.status === 'Active' ? 'success' : 'warning'}">${loan.status || 'Active'}</span></td>
-                    </tr>
-                `;
-            });
-        }
-
-        // Section navigation
         function showSection(section) {
-            // Hide all sections
-            document.getElementById('dashboard-section').style.display = 'none';
-            document.getElementById('emi-history-section').style.display = 'none';
-            document.getElementById('my-loans-section').style.display = 'none';
-            document.getElementById('profile-section').style.display = 'none';
-            
-            // Show selected section
+            let sections = ['dashboard', 'monthly-emi', 'my-loans', 'profile'];
+            sections.forEach(s => {
+                document.getElementById(s + '-section').style.display = 'none';
+            });
             document.getElementById(section + '-section').style.display = 'block';
             
-            // Update active menu
-            document.querySelectorAll('.sidebar-menu li').forEach(li => {
-                li.classList.remove('active');
-            });
+            document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
             event.currentTarget.classList.add('active');
             
-            // Refresh data when switching sections
-            if (section === 'profile') {
-                console.log('Profile section opened, refreshing data...');
-                updateProfileDisplay();
-            } else if (section === 'emi-history') {
-                updateEMIHistory();
-            } else if (section === 'my-loans') {
-                updateLoansTable();
-            }
+            if (section === 'monthly-emi') loadMonthlyEMI();
+            if (section === 'my-loans') loadLoans();
         }
 
-        // Logout function
         function logout() {
-            localStorage.removeItem('user');
-            localStorage.removeItem('userId');
-            window.location.href = '/login.html';
-        }
-
-        // Helper function to format currency
-        function formatCurrency(amount) {
-            return '₹' + (Number(amount) || 0).toLocaleString('en-IN');
+            if (confirm('Logout?')) {
+                localStorage.removeItem('user');
+                window.location.href = '/Login.html';
+            }
         }
     </script>
 </body>
