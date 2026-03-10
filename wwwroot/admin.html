@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Credit Society</title>
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -98,8 +100,8 @@
             background: #27ae60;
             color: white;
         }
-        .btn-warning {
-            background: #f39c12;
+        .btn-info {
+            background: #3498db;
             color: white;
         }
         table {
@@ -148,7 +150,6 @@
             padding: 30px;
             border-radius: 15px;
             width: 400px;
-            max-width: 90%;
         }
         .form-group {
             margin-bottom: 15px;
@@ -199,6 +200,16 @@
             border-radius: 10px;
             text-align: center;
         }
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+        }
     </style>
 </head>
 <body>
@@ -223,39 +234,16 @@
         <div id="dashboard-section">
             <h2>Dashboard Overview</h2>
             <div class="stats-container">
-                <div class="stat-card">
-                    <div>👥 Total Members</div>
-                    <h3 id="totalMembers">0</h3>
-                </div>
-                <div class="stat-card">
-                    <div>💰 Active Loans</div>
-                    <h3 id="totalLoans">0</h3>
-                </div>
-                <div class="stat-card">
-                    <div>📅 Total EMI Records</div>
-                    <h3 id="totalEMI">0</h3>
-                </div>
-                <div class="stat-card">
-                    <div>📆 This Month Collection</div>
-                    <h3 id="monthlyTotal">₹0</h3>
-                </div>
+                <div class="stat-card"><div>👥 Total Members</div><h3 id="totalMembers">0</h3></div>
+                <div class="stat-card"><div>💰 Active Loans</div><h3 id="totalLoans">0</h3></div>
+                <div class="stat-card"><div>📅 Total EMI Records</div><h3 id="totalEMI">0</h3></div>
+                <div class="stat-card"><div>📆 This Month Collection</div><h3 id="monthlyTotal">₹0</h3></div>
             </div>
-
-            <!-- Recent Activities -->
             <div class="card">
                 <h3>📋 Recent Activities</h3>
                 <table id="recentActivitiesTable">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Activity</th>
-                            <th>Member</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td colspan="4" style="text-align:center; color:#999;">No recent activities</td></tr>
-                    </tbody>
+                    <thead><tr><th>Date</th><th>Activity</th><th>Member</th><th>Amount</th></tr></thead>
+                    <tbody><tr><td colspan="4" class="empty-state">No recent activities</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -265,24 +253,13 @@
             <div class="card">
                 <div class="card-header">
                     <h3>👥 Member Management</h3>
-                    <div>
-                        <input type="text" class="search-box" id="memberSearch" placeholder="Search members..." onkeyup="searchMembers()">
+                    <div class="action-bar">
+                        <input type="text" class="search-box" id="memberSearch" placeholder="Search..." onkeyup="searchMembers()">
                         <button class="btn btn-primary" onclick="showAddMemberModal()">➕ Add Member</button>
                     </div>
                 </div>
                 <table id="membersTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Loans</th>
-                            <th>EMI</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Loans</th><th>EMI</th><th>Status</th><th>Actions</th></tr></thead>
                     <tbody></tbody>
                 </table>
                 <div class="pagination" id="memberPagination"></div>
@@ -294,25 +271,13 @@
             <div class="card">
                 <div class="card-header">
                     <h3>💰 Loan Management</h3>
-                    <div>
-                        <input type="text" class="search-box" id="loanSearch" placeholder="Search loans..." onkeyup="searchLoans()">
+                    <div class="action-bar">
+                        <input type="text" class="search-box" id="loanSearch" placeholder="Search..." onkeyup="searchLoans()">
                         <button class="btn btn-primary" onclick="showAddLoanModal()">➕ Add Loan</button>
                     </div>
                 </div>
                 <table id="loansTable">
-                    <thead>
-                        <tr>
-                            <th>Loan ID</th>
-                            <th>Member</th>
-                            <th>Amount</th>
-                            <th>Interest</th>
-                            <th>Term</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>ID</th><th>Member</th><th>Amount</th><th>Interest</th><th>Term</th><th>Start</th><th>End</th><th>Status</th><th>Actions</th></tr></thead>
                     <tbody></tbody>
                 </table>
                 <div class="pagination" id="loanPagination"></div>
@@ -324,11 +289,11 @@
             <div class="card">
                 <div class="card-header">
                     <h3>📅 EMI Records</h3>
-                    <div>
+                    <div class="action-bar">
                         <select id="emiMonthSelector" class="search-box" onchange="loadEMIByMonth()">
                             <option value="">All Months</option>
                         </select>
-                        <input type="text" class="search-box" id="emiSearch" placeholder="Search EMI..." onkeyup="searchEMI()">
+                        <input type="text" class="search-box" id="emiSearch" placeholder="Search..." onkeyup="searchEMI()">
                         <button class="btn btn-primary" onclick="exportEMIToExcel()">📥 Export</button>
                     </div>
                 </div>
@@ -339,19 +304,7 @@
                     <div class="summary-card"><div>Pending</div><h4 id="emiPendingAmount">₹0</h4></div>
                 </div>
                 <table id="emiTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Member</th>
-                            <th>Amount</th>
-                            <th>Paid</th>
-                            <th>Date</th>
-                            <th>Mode</th>
-                            <th>Late Fee</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>ID</th><th>Member</th><th>Amount</th><th>Paid</th><th>Date</th><th>Mode</th><th>Late Fee</th><th>Status</th><th>Actions</th></tr></thead>
                     <tbody></tbody>
                 </table>
                 <div class="pagination" id="emiPagination"></div>
@@ -363,7 +316,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3>📆 Monthly Collection</h3>
-                    <div>
+                    <div class="action-bar">
                         <select id="monthYear" class="search-box" onchange="loadMonthlyCollection()">
                             <option value="">Select Month</option>
                         </select>
@@ -377,19 +330,7 @@
                     <div class="summary-card"><div>Pending</div><h4 id="pendingAmountMonth">₹0</h4></div>
                 </div>
                 <table id="monthlyTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Member</th>
-                            <th>Amount</th>
-                            <th>Paid</th>
-                            <th>Date</th>
-                            <th>Mode</th>
-                            <th>Late Fee</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>ID</th><th>Member</th><th>Amount</th><th>Paid</th><th>Date</th><th>Mode</th><th>Late Fee</th><th>Status</th><th>Actions</th></tr></thead>
                     <tbody></tbody>
                 </table>
                 <div style="margin-top:20px; padding:15px; background:#f0f7ff; border-radius:10px;">
@@ -407,11 +348,21 @@
         <!-- Reports Section -->
         <div id="reports-section" style="display:none">
             <div class="card">
-                <h3>📈 Reports</h3>
-                <button class="btn btn-primary" onclick="generateReport('daily')">Daily</button>
-                <button class="btn btn-primary" onclick="generateReport('monthly')">Monthly</button>
-                <button class="btn btn-primary" onclick="generateReport('yearly')">Yearly</button>
-                <div id="reportContent" style="margin-top:20px;"></div>
+                <h3>📈 Financial Reports</h3>
+                
+                <!-- Chart Container -->
+                <div style="margin: 30px 0;">
+                    <canvas id="emiChart" style="width:100%; max-width:600px; margin:0 auto;"></canvas>
+                </div>
+                
+                <div class="action-bar" style="margin-bottom: 20px;">
+                    <button class="btn btn-primary" onclick="generateReport('daily')">Daily</button>
+                    <button class="btn btn-primary" onclick="generateReport('monthly')">Monthly</button>
+                    <button class="btn btn-primary" onclick="generateReport('yearly')">Yearly</button>
+                </div>
+                <div id="reportContent" style="padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                    <p class="empty-state">Select a report type to generate</p>
+                </div>
             </div>
         </div>
     </div>
@@ -420,7 +371,7 @@
     <div id="addMemberModal" class="modal">
         <div class="modal-content">
             <h3>➕ Add Member</h3>
-            <div class="form-group"><label>Full Name</label><input type="text" id="memberName"></div>
+            <div class="form-group"><label>Name</label><input type="text" id="memberName"></div>
             <div class="form-group"><label>Email</label><input type="email" id="memberEmail"></div>
             <div class="form-group"><label>Phone</label><input type="text" id="memberPhone"></div>
             <div class="form-group"><label>Username</label><input type="text" id="memberUsername"></div>
@@ -435,9 +386,9 @@
         <div class="modal-content">
             <h3>💰 Add Loan</h3>
             <div class="form-group"><label>Member</label><select id="loanMember"></select></div>
-            <div class="form-group"><label>Amount (₹)</label><input type="number" id="loanAmount"></div>
+            <div class="form-group"><label>Amount</label><input type="number" id="loanAmount"></div>
             <div class="form-group"><label>Interest (%)</label><input type="number" step="0.1" id="loanInterest"></div>
-            <div class="form-group"><label>Term (months)</label><input type="number" id="loanTerm" value="12"></div>
+            <div class="form-group"><label>Term</label><input type="number" id="loanTerm" value="12"></div>
             <div class="form-group"><label>Start Date</label><input type="date" id="loanStartDate"></div>
             <button class="btn btn-success" onclick="addLoan()">Save</button>
             <button class="btn btn-danger" onclick="closeModals()">Cancel</button>
@@ -450,9 +401,9 @@
             <h3>💰 Mark Payment</h3>
             <input type="hidden" id="paymentId">
             <div class="form-group"><label>Member</label><input type="text" id="paymentMemberName" readonly></div>
-            <div class="form-group"><label>Paid Amount</label><input type="number" id="paymentPaid" value="1000"></div>
-            <div class="form-group"><label>Payment Date</label><input type="date" id="paymentDate"></div>
-            <div class="form-group"><label>Payment Mode</label><select id="paymentMode"><option value="Cash">Cash</option><option value="Online">Online</option></select></div>
+            <div class="form-group"><label>Paid</label><input type="number" id="paymentPaid" value="1000"></div>
+            <div class="form-group"><label>Date</label><input type="date" id="paymentDate"></div>
+            <div class="form-group"><label>Mode</label><select id="paymentMode"><option value="Cash">Cash</option><option value="Online">Online</option></select></div>
             <div class="form-group"><label>Late Fee</label><input type="number" id="paymentLateFee" value="0"></div>
             <button class="btn btn-success" onclick="savePayment()">Save</button>
             <button class="btn btn-danger" onclick="closePaymentModal()">Cancel</button>
@@ -463,6 +414,7 @@
         let members = [], loans = [], emiMonthlyData = [], monthlyData = [];
         let currentMemberPage = 1, currentLoanPage = 1, currentEMIPage = 1;
         const itemsPerPage = 10;
+        let emiChart = null;
 
         window.onload = function() {
             loadMembers();
@@ -615,10 +567,17 @@
                     <td>${e.payment_mode || '-'}</td>
                     <td>₹${e.late_fee || 0}</td>
                     <td><span class="badge-${statusClass}">${e.status || 'Pending'}</span></td>
-                    <td><button class="btn btn-success" onclick="openPaymentModal(${e.id}, '${e.member_name}', ${e.paid_amount || 0})">Pay</button></td>
+                    <td>
+                        <button class="btn btn-success" onclick="openPaymentModal(${e.id}, '${e.member_name}', ${e.paid_amount || 0})">Pay</button>
+                        <button class="btn btn-info" onclick="downloadReceipt('emi', ${e.id})">📥 Receipt</button>
+                    </td>
                 </tr>`;
             });
             updatePagination('emi');
+        }
+
+        function downloadReceipt(type, id) {
+            window.open(`/api/Receipt/${type}/${id}`, '_blank');
         }
 
         function updateEMISummary() {
@@ -651,7 +610,10 @@
                     <td>${e.payment_mode || '-'}</td>
                     <td>₹${e.late_fee || 0}</td>
                     <td><span class="badge-${statusClass}">${e.status || 'Pending'}</span></td>
-                    <td><button class="btn btn-success" onclick="openPaymentModal(${e.id}, '${e.member_name}', ${e.paid_amount || 0})">Pay</button></td>
+                    <td>
+                        <button class="btn btn-success" onclick="openPaymentModal(${e.id}, '${e.member_name}', ${e.paid_amount || 0})">Pay</button>
+                        <button class="btn btn-info" onclick="downloadReceipt('emi', ${e.id})">📥 Receipt</button>
+                    </td>
                 </tr>`;
             });
         }
@@ -786,6 +748,39 @@
             } catch (e) { console.error(e); }
         }
 
+        function loadChart() {
+            fetch('/api/Member/stats')
+                .then(res => res.json())
+                .then(data => {
+                    let totalEMI = data.totalEMI * 1000;
+                    let collected = data.monthlyTotal;
+                    let pending = totalEMI - collected;
+                    
+                    if (emiChart) emiChart.destroy();
+                    
+                    let ctx = document.getElementById('emiChart').getContext('2d');
+                    emiChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Total EMI', 'Collected', 'Pending'],
+                            datasets: [{
+                                label: 'Amount (₹)',
+                                data: [totalEMI, collected, pending],
+                                backgroundColor: ['#3498db', '#27ae60', '#e74c3c'],
+                                borderRadius: 5
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { display: false },
+                                title: { display: true, text: 'EMI Collection Summary' }
+                            }
+                        }
+                    });
+                });
+        }
+
         async function addMember() {
             let member = {
                 username: document.getElementById('memberUsername').value,
@@ -874,16 +869,21 @@
                 </table>`;
         }
 
-        function showSection(s) {
-            ['dashboard', 'members', 'loans', 'emi', 'monthly', 'reports'].forEach(sec => {
-                let el = document.getElementById(sec + '-section');
+        function showSection(section) {
+            const sections = ['dashboard', 'members', 'loans', 'emi', 'monthly', 'reports'];
+            sections.forEach(s => {
+                let el = document.getElementById(s + '-section');
                 if (el) el.style.display = 'none';
             });
-            document.getElementById(s + '-section').style.display = 'block';
+            document.getElementById(section + '-section').style.display = 'block';
             document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
             event.currentTarget.classList.add('active');
-            if (s == 'monthly' && document.getElementById('monthYear').value) loadMonthlyCollection();
-            if (s == 'emi') loadEMIByMonth();
+            if (section == 'monthly' && document.getElementById('monthYear').value) loadMonthlyCollection();
+            if (section == 'emi') loadEMIByMonth();
+            if (section == 'reports') {
+                loadChart();
+                generateReport('monthly');
+            }
         }
 
         function showAddMemberModal() { document.getElementById('addMemberModal').style.display = 'flex'; }
