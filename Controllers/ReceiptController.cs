@@ -34,7 +34,7 @@ public class ReceiptController : ControllerBase
                 decimal amount = Convert.ToDecimal(reader["amount"]);
                 decimal paid = Convert.ToDecimal(reader["paid_amount"]);
                 string date = reader["payment_date"] == DBNull.Value ? "Not Paid" : Convert.ToDateTime(reader["payment_date"]).ToString("dd/MM/yyyy");
-                string mode = reader["payment_mode"] == DBNull.Value ? "N/A" : reader["payment_mode"].ToString() ?? "N/A";
+                string mode = reader["payment_mode"] == DBNull.Value ? "N/A" : reader["payment_mode"].ToString();
                 
                 StringBuilder csv = new StringBuilder();
                 csv.AppendLine("═══════════════════════════════════════");

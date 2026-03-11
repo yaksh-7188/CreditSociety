@@ -269,6 +269,42 @@ public class AuthController : ControllerBase
             return StatusCode(500, new { message = "Server error: " + ex.Message });
         }
     }
+
+    [HttpPut("users/{id}/password")]
+    public IActionResult UpdatePassword(int id, [FromBody] PasswordModel model)
+    {
+        try
+        {
+            using var conn = DatabaseHelper.GetConnection();
+            conn.Open();
+            
+            string checkQuery = "SELECT Role FROM creditsocietydb_users WHERE Id = @Id";
+            using var checkCmd = new MySqlCommand(checkQuery, conn);
+            checkCmd.Parameters.AddWithValue("@Id", id);
+            var role = checkCmd.ExecuteScalar()?.ToString();
+            
+            if (role == null)
+                return NotFound(new { message = "User not found" });
+            
+            // Admin can update any member's password
+            string query = "UPDATE creditsocietydb_users SET Password = @Password WHERE Id = @Id";
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@Password", model.NewPassword);
+            cmd.Parameters.AddWithValue("@Id", id);
+            
+            int rowsAffected = cmd.ExecuteNonQuery();
+            if (rowsAffected > 0)
+            {
+                return Ok(new { message = "Password updated successfully" });
+            }
+            
+            return BadRequest(new { message = "Failed to update password" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Server error: " + ex.Message });
+        }
+    }
 }
 
 public class LoginModel
@@ -295,4 +331,9 @@ public class LoanModel
     public int LoanTerm { get; set; }
     public string StartDate { get; set; } = "";
     public string Status { get; set; } = "Active";
+}
+
+public class PasswordModel
+{
+    public string NewPassword { get; set; } = "";
 }

@@ -100,6 +100,10 @@
             background: #27ae60;
             color: white;
         }
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
         .btn-info {
             background: #3498db;
             color: white;
@@ -149,7 +153,8 @@
             background: white;
             padding: 30px;
             border-radius: 15px;
-            width: 400px;
+            width: 450px;
+            max-width: 90%;
         }
         .form-group {
             margin-bottom: 15px;
@@ -159,7 +164,7 @@
             margin-bottom: 5px;
             font-weight: bold;
         }
-        .form-group input, .form-group select {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
@@ -210,6 +215,18 @@
             padding: 50px;
             color: #999;
         }
+        .strength-meter {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        .strength-bar-weak { background: #e74c3c; width: 33%; }
+        .strength-bar-medium { background: #f39c12; width: 66%; }
+        .strength-bar-strong { background: #27ae60; width: 100%; }
+        input.invalid { border-color: #e74c3c !important; }
+        input.valid { border-color: #27ae60 !important; }
     </style>
 </head>
 <body>
@@ -259,7 +276,18 @@
                     </div>
                 </div>
                 <table id="membersTable">
-                    <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Loans</th><th>EMI</th><th>Status</th><th>Actions</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Loans</th>
+                            <th>EMI</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
                     <tbody></tbody>
                 </table>
                 <div class="pagination" id="memberPagination"></div>
@@ -277,7 +305,19 @@
                     </div>
                 </div>
                 <table id="loansTable">
-                    <thead><tr><th>ID</th><th>Member</th><th>Amount</th><th>Interest</th><th>Term</th><th>Start</th><th>End</th><th>Status</th><th>Actions</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Member</th>
+                            <th>Amount</th>
+                            <th>Interest</th>
+                            <th>Term</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
                     <tbody></tbody>
                 </table>
                 <div class="pagination" id="loanPagination"></div>
@@ -304,7 +344,19 @@
                     <div class="summary-card"><div>Pending</div><h4 id="emiPendingAmount">₹0</h4></div>
                 </div>
                 <table id="emiTable">
-                    <thead><tr><th>ID</th><th>Member</th><th>Amount</th><th>Paid</th><th>Date</th><th>Mode</th><th>Late Fee</th><th>Status</th><th>Actions</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Member</th>
+                            <th>Amount</th>
+                            <th>Paid</th>
+                            <th>Date</th>
+                            <th>Mode</th>
+                            <th>Late Fee</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
                     <tbody></tbody>
                 </table>
                 <div class="pagination" id="emiPagination"></div>
@@ -330,7 +382,19 @@
                     <div class="summary-card"><div>Pending</div><h4 id="pendingAmountMonth">₹0</h4></div>
                 </div>
                 <table id="monthlyTable">
-                    <thead><tr><th>ID</th><th>Member</th><th>Amount</th><th>Paid</th><th>Date</th><th>Mode</th><th>Late Fee</th><th>Status</th><th>Actions</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Member</th>
+                            <th>Amount</th>
+                            <th>Paid</th>
+                            <th>Date</th>
+                            <th>Mode</th>
+                            <th>Late Fee</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
                     <tbody></tbody>
                 </table>
                 <div style="margin-top:20px; padding:15px; background:#f0f7ff; border-radius:10px;">
@@ -370,14 +434,50 @@
     <!-- Add Member Modal -->
     <div id="addMemberModal" class="modal">
         <div class="modal-content">
-            <h3>➕ Add Member</h3>
-            <div class="form-group"><label>Name</label><input type="text" id="memberName"></div>
-            <div class="form-group"><label>Email</label><input type="email" id="memberEmail"></div>
-            <div class="form-group"><label>Phone</label><input type="text" id="memberPhone"></div>
-            <div class="form-group"><label>Username</label><input type="text" id="memberUsername"></div>
-            <div class="form-group"><label>Password</label><input type="password" id="memberPassword"></div>
-            <button class="btn btn-success" onclick="addMember()">Save</button>
-            <button class="btn btn-danger" onclick="closeModals()">Cancel</button>
+            <h3>➕ Add New Member</h3>
+            
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="memberFullName" placeholder="Enter full name" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="memberEmail" placeholder="Enter email" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" id="memberPhone" placeholder="Enter phone" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Username <span style="color:#e74c3c; font-size:12px;">(Capital first, min 4 chars, at least 1 number)</span></label>
+                <input type="text" id="memberUsername" placeholder="e.g. John123" onkeyup="validateMemberUsername()">
+                <div id="memberUsernameValidation" style="color:#e74c3c; font-size:12px; margin-top:5px; display:none;"></div>
+                <div class="strength-meter">
+                    <div id="memberUsernameStrength" style="height:100%; width:0%; transition:all 0.3s;"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Password <span style="color:#e74c3c; font-size:12px;">(Min 6 chars, 1 number, 1 special)</span></label>
+                <input type="password" id="memberPassword" placeholder="Enter password" onkeyup="validateMemberPassword()">
+                <div id="memberPasswordValidation" style="color:#e74c3c; font-size:12px; margin-top:5px; display:none;"></div>
+                <div class="strength-meter">
+                    <div id="memberPasswordStrength" style="height:100%; width:0%; transition:all 0.3s;"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Address</label>
+                <textarea id="memberAddress" placeholder="Enter address" rows="2"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success" onclick="addMember()" id="addMemberBtn" disabled>💾 Save</button>
+                <button class="btn btn-danger" onclick="closeModals()">❌ Cancel</button>
+            </div>
         </div>
     </div>
 
@@ -407,6 +507,32 @@
             <div class="form-group"><label>Late Fee</label><input type="number" id="paymentLateFee" value="0"></div>
             <button class="btn btn-success" onclick="savePayment()">Save</button>
             <button class="btn btn-danger" onclick="closePaymentModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Edit Password Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <h3>🔑 Edit Password</h3>
+            <input type="hidden" id="passwordMemberId">
+            <div class="form-group">
+                <label>Member Name</label>
+                <input type="text" id="passwordMemberName" readonly>
+            </div>
+            <div class="form-group">
+                <label>New Password <span style="color:#e74c3c; font-size:12px;">(Min 6 chars, 1 number, 1 special)</span></label>
+                <input type="password" id="newPassword" placeholder="Enter new password" onkeyup="validateNewPassword()">
+                <div id="newPasswordValidation" style="color:#e74c3c; font-size:12px; margin-top:5px; display:none;"></div>
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="confirmPassword" placeholder="Confirm new password" onkeyup="validateConfirmPassword()">
+                <div id="confirmPasswordValidation" style="color:#e74c3c; font-size:12px; margin-top:5px; display:none;"></div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success" onclick="updatePassword()" id="updatePasswordBtn" disabled>💾 Update</button>
+                <button class="btn btn-danger" onclick="closePasswordModal()">❌ Cancel</button>
+            </div>
         </div>
     </div>
 
@@ -476,7 +602,10 @@
                     <td>${memberLoans}</td>
                     <td>${memberEMI}</td>
                     <td><span class="badge-success">Active</span></td>
-                    <td><button class="btn btn-danger" onclick="deleteMember(${m.id})">Delete</button></td>
+                    <td>
+                        <button class="btn btn-danger" onclick="deleteMember(${m.id})">Delete</button>
+                        <button class="btn btn-warning" onclick="showPasswordModal(${m.id}, '${m.fullName}')">🔑 Edit Password</button>
+                    </td>
                 </tr>`;
             });
             updatePagination('member');
@@ -781,28 +910,315 @@
                 });
         }
 
+        // Validation for member username
+        function validateMemberUsername() {
+            const username = document.getElementById('memberUsername').value;
+            const msgDiv = document.getElementById('memberUsernameValidation');
+            const input = document.getElementById('memberUsername');
+            const strengthDiv = document.getElementById('memberUsernameStrength');
+            
+            input.classList.remove('invalid', 'valid');
+            msgDiv.style.display = 'none';
+            strengthDiv.style.width = '0%';
+            strengthDiv.className = '';
+            
+            if (username.length === 0) {
+                checkAddMemberButton();
+                return false;
+            }
+            
+            if (username.length > 0) {
+                const firstChar = username.charAt(0);
+                if (firstChar !== firstChar.toUpperCase() || !isNaN(firstChar)) {
+                    msgDiv.style.display = 'block';
+                    msgDiv.innerText = '❌ First letter must be capital';
+                    input.classList.add('invalid');
+                    strengthDiv.style.width = '25%';
+                    checkAddMemberButton();
+                    return false;
+                }
+            }
+            
+            if (username.length < 4) {
+                msgDiv.style.display = 'block';
+                msgDiv.innerText = '❌ Username must be at least 4 characters';
+                input.classList.add('invalid');
+                strengthDiv.style.width = '25%';
+                checkAddMemberButton();
+                return false;
+            }
+            
+            if (!/\d/.test(username)) {
+                msgDiv.style.display = 'block';
+                msgDiv.innerText = '❌ Username must contain at least one number';
+                input.classList.add('invalid');
+                strengthDiv.style.width = '25%';
+                checkAddMemberButton();
+                return false;
+            }
+            
+            input.classList.add('valid');
+            strengthDiv.style.width = '100%';
+            msgDiv.style.display = 'none';
+            checkAddMemberButton();
+            return true;
+        }
+
+        function validateMemberPassword() {
+            const password = document.getElementById('memberPassword').value;
+            const msgDiv = document.getElementById('memberPasswordValidation');
+            const input = document.getElementById('memberPassword');
+            const strengthDiv = document.getElementById('memberPasswordStrength');
+            
+            input.classList.remove('invalid', 'valid');
+            msgDiv.style.display = 'none';
+            strengthDiv.style.width = '0%';
+            strengthDiv.className = '';
+            
+            if (password.length === 0) {
+                checkAddMemberButton();
+                return false;
+            }
+            
+            let strength = 0;
+            let errors = [];
+            
+            if (password.length < 6) {
+                errors.push('at least 6 characters');
+            } else {
+                strength++;
+            }
+            
+            if (!/\d/.test(password)) {
+                errors.push('one number');
+            } else {
+                strength++;
+            }
+            
+            if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                errors.push('one special character');
+            } else {
+                strength++;
+            }
+            
+            if (errors.length > 0) {
+                msgDiv.style.display = 'block';
+                msgDiv.innerText = '❌ Password must contain: ' + errors.join(', ');
+                input.classList.add('invalid');
+                
+                if (strength === 1) strengthDiv.style.width = '33%';
+                else if (strength === 2) strengthDiv.style.width = '66%';
+                checkAddMemberButton();
+                return false;
+            }
+            
+            input.classList.add('valid');
+            strengthDiv.style.width = '100%';
+            msgDiv.style.display = 'none';
+            checkAddMemberButton();
+            return true;
+        }
+
+        function checkAddMemberButton() {
+            const usernameValid = validateMemberUsername();
+            const passwordValid = validateMemberPassword();
+            const fullName = document.getElementById('memberFullName').value;
+            const email = document.getElementById('memberEmail').value;
+            const phone = document.getElementById('memberPhone').value;
+            
+            document.getElementById('addMemberBtn').disabled = !(usernameValid && passwordValid && fullName && email && phone);
+        }
+
+        document.getElementById('memberFullName').addEventListener('keyup', checkAddMemberButton);
+        document.getElementById('memberEmail').addEventListener('keyup', checkAddMemberButton);
+        document.getElementById('memberPhone').addEventListener('keyup', checkAddMemberButton);
+
         async function addMember() {
-            let member = {
+            if (!validateMemberUsername() || !validateMemberPassword()) {
+                alert('Please fix validation errors first');
+                return;
+            }
+            
+            const member = {
                 username: document.getElementById('memberUsername').value,
                 password: document.getElementById('memberPassword').value,
-                fullName: document.getElementById('memberName').value,
+                fullName: document.getElementById('memberFullName').value,
                 email: document.getElementById('memberEmail').value,
                 phone: document.getElementById('memberPhone').value,
+                address: document.getElementById('memberAddress').value,
                 role: 'Member'
             };
-            if (!member.fullName || !member.username || !member.password) { alert('Fill all'); return; }
+            
+            if (!member.fullName || !member.email || !member.phone) {
+                alert('Please fill all required fields');
+                return;
+            }
+            
             try {
-                await fetch('/api/Auth/users', {
+                const response = await fetch('/api/Auth/users', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(member)
                 });
-                alert('✅ Member added');
-                closeModals();
-                loadMembers();
-                loadDashboardStats();
-                loadEMIByMonth();
-            } catch (e) { alert('❌ Error'); }
+                
+                if (response.ok) {
+                    alert('✅ Member added successfully!');
+                    closeModals();
+                    loadMembers();
+                    
+                    document.getElementById('memberFullName').value = '';
+                    document.getElementById('memberEmail').value = '';
+                    document.getElementById('memberPhone').value = '';
+                    document.getElementById('memberUsername').value = '';
+                    document.getElementById('memberPassword').value = '';
+                    document.getElementById('memberAddress').value = '';
+                    document.getElementById('addMemberBtn').disabled = true;
+                } else {
+                    const error = await response.json();
+                    alert('❌ Error: ' + (error.message || 'Failed to add member'));
+                }
+            } catch (error) {
+                alert('❌ Server error!');
+            }
+        }
+
+        function showAddMemberModal() {
+            document.getElementById('memberFullName').value = '';
+            document.getElementById('memberEmail').value = '';
+            document.getElementById('memberPhone').value = '';
+            document.getElementById('memberUsername').value = '';
+            document.getElementById('memberPassword').value = '';
+            document.getElementById('memberAddress').value = '';
+            
+            document.getElementById('memberUsernameValidation').style.display = 'none';
+            document.getElementById('memberPasswordValidation').style.display = 'none';
+            document.getElementById('memberUsernameStrength').style.width = '0%';
+            document.getElementById('memberPasswordStrength').style.width = '0%';
+            document.getElementById('memberUsername').classList.remove('invalid', 'valid');
+            document.getElementById('memberPassword').classList.remove('invalid', 'valid');
+            
+            document.getElementById('addMemberBtn').disabled = true;
+            document.getElementById('addMemberModal').style.display = 'flex';
+        }
+
+        // Password Edit Functions
+        function showPasswordModal(id, name) {
+            document.getElementById('passwordMemberId').value = id;
+            document.getElementById('passwordMemberName').value = name;
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            document.getElementById('newPasswordValidation').style.display = 'none';
+            document.getElementById('confirmPasswordValidation').style.display = 'none';
+            document.getElementById('updatePasswordBtn').disabled = true;
+            document.getElementById('passwordModal').style.display = 'flex';
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+        }
+
+        function validateNewPassword() {
+            const password = document.getElementById('newPassword').value;
+            const msgDiv = document.getElementById('newPasswordValidation');
+            
+            if (password.length === 0) {
+                msgDiv.style.display = 'none';
+                checkPasswordMatch();
+                return false;
+            }
+            
+            let errors = [];
+            
+            if (password.length < 6) {
+                errors.push('at least 6 characters');
+            }
+            
+            if (!/\d/.test(password)) {
+                errors.push('one number');
+            }
+            
+            if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                errors.push('one special character');
+            }
+            
+            if (errors.length > 0) {
+                msgDiv.style.display = 'block';
+                msgDiv.innerText = '❌ Password must contain: ' + errors.join(', ');
+                checkPasswordMatch();
+                return false;
+            }
+            
+            msgDiv.style.display = 'none';
+            checkPasswordMatch();
+            return true;
+        }
+
+        function validateConfirmPassword() {
+            const password = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            const msgDiv = document.getElementById('confirmPasswordValidation');
+            
+            if (confirm.length === 0) {
+                msgDiv.style.display = 'none';
+                checkPasswordMatch();
+                return false;
+            }
+            
+            if (password !== confirm) {
+                msgDiv.style.display = 'block';
+                msgDiv.innerText = '❌ Passwords do not match';
+                checkPasswordMatch();
+                return false;
+            }
+            
+            msgDiv.style.display = 'none';
+            checkPasswordMatch();
+            return true;
+        }
+
+        function checkPasswordMatch() {
+            const passwordValid = validateNewPassword();
+            const confirmValid = (document.getElementById('newPassword').value === document.getElementById('confirmPassword').value) && 
+                                 document.getElementById('confirmPassword').value.length > 0;
+            
+            document.getElementById('updatePasswordBtn').disabled = !(passwordValid && confirmValid);
+        }
+
+        async function updatePassword() {
+            if (!validateNewPassword() || !validateConfirmPassword()) {
+                alert('Please fix validation errors');
+                return;
+            }
+            
+            const id = document.getElementById('passwordMemberId').value;
+            const newPassword = document.getElementById('newPassword').value;
+
+            try {
+                const response = await fetch(`/api/Auth/users/${id}/password`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ newPassword: newPassword })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('✅ Password updated successfully!');
+                    closePasswordModal();
+                } else {
+                    alert('❌ Error: ' + (data.message || 'Failed to update password'));
+                }
+            } catch (error) {
+                alert('❌ Server error!');
+            }
+        }
+
+        // Update closeModals function
+        function closeModals() {
+            document.getElementById('addMemberModal').style.display = 'none';
+            document.getElementById('addLoanModal').style.display = 'none';
+            document.getElementById('paymentModal').style.display = 'none';
+            document.getElementById('passwordModal').style.display = 'none';
         }
 
         async function deleteMember(id) {
@@ -853,6 +1269,18 @@
             } catch (e) { alert('❌ Error'); }
         }
 
+        function searchMembers() {
+            let term = document.getElementById('memberSearch').value.toLowerCase();
+            let filtered = members.filter(m => m.fullName?.toLowerCase().includes(term));
+            // Display filtered members logic here
+        }
+
+        function searchLoans() {
+            let term = document.getElementById('loanSearch').value.toLowerCase();
+            let filtered = loans.filter(l => l.memberName?.toLowerCase().includes(term));
+            // Display filtered loans logic here
+        }
+
         function generateReport(type) {
             let total = 0, paid = 0;
             emiMonthlyData.forEach(e => {
@@ -886,14 +1314,9 @@
             }
         }
 
-        function showAddMemberModal() { document.getElementById('addMemberModal').style.display = 'flex'; }
-        function showAddLoanModal() { document.getElementById('addLoanModal').style.display = 'flex'; }
-        function closeModals() {
-            document.getElementById('addMemberModal').style.display = 'none';
-            document.getElementById('addLoanModal').style.display = 'none';
-            document.getElementById('paymentModal').style.display = 'none';
+        function logout() {
+            if (confirm('Logout?')) window.location.href = '/Login.html';
         }
-        function logout() { if (confirm('Logout?')) window.location.href = '/Login.html'; }
     </script>
 </body>
 </html>
