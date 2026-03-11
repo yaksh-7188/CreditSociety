@@ -52,7 +52,22 @@ public class MemberController : ControllerBase
             conn.Open();
             
             string query = @"
-                SELECT * FROM creditsocietydb_loans 
+                SELECT 
+                    LoanID,
+                    LoanAmount,
+                    InterestRate,
+                    LoanTerm,
+                    StartDate,
+                    EndDate,
+                    Status,
+                    PaidAmount,
+                    ClosingDate,
+                    TotalInterest,
+                    TotalPayable,
+                    IsClosed,
+                    (LoanAmount * InterestRate / 100) as CalculatedInterest,
+                    (LoanAmount + (LoanAmount * InterestRate / 100)) as TotalWithInterest
+                FROM creditsocietydb_loans 
                 WHERE UserID = @UserId
                 ORDER BY StartDate DESC";
             
@@ -71,7 +86,12 @@ public class MemberController : ControllerBase
                     term = Convert.ToInt32(reader["LoanTerm"]),
                     startDate = reader["StartDate"] == DBNull.Value ? null : Convert.ToDateTime(reader["StartDate"]).ToString("dd/MM/yyyy"),
                     endDate = reader["EndDate"] == DBNull.Value ? null : Convert.ToDateTime(reader["EndDate"]).ToString("dd/MM/yyyy"),
-                    status = reader["Status"]?.ToString() ?? "Active"
+                    status = reader["Status"]?.ToString() ?? "Active",
+                    paidAmount = reader["PaidAmount"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["PaidAmount"]),
+                    closingDate = reader["ClosingDate"] == DBNull.Value ? null : Convert.ToDateTime(reader["ClosingDate"]).ToString("dd/MM/yyyy"),
+                    totalInterest = reader["TotalInterest"] == DBNull.Value ? Convert.ToDecimal(reader["CalculatedInterest"]) : Convert.ToDecimal(reader["TotalInterest"]),
+                    totalPayable = reader["TotalPayable"] == DBNull.Value ? Convert.ToDecimal(reader["TotalWithInterest"]) : Convert.ToDecimal(reader["TotalPayable"]),
+                    isClosed = reader["IsClosed"] == DBNull.Value ? false : Convert.ToBoolean(reader["IsClosed"])
                 });
             }
             
@@ -107,7 +127,7 @@ public class MemberController : ControllerBase
                 {
                     id = reader["id"],
                     monthYear = Convert.ToDateTime(reader["month_year"]).ToString("MMMM yyyy"),
-                    totalAmount = Convert.ToDecimal(reader["amount"]),
+                    amount = Convert.ToDecimal(reader["amount"]),
                     paidAmount = Convert.ToDecimal(reader["paid_amount"]),
                     paymentDate = reader["payment_date"] == DBNull.Value ? null : Convert.ToDateTime(reader["payment_date"]).ToString("dd/MM/yyyy"),
                     paymentMode = reader["payment_mode"]?.ToString(),
@@ -137,8 +157,7 @@ public class MemberController : ControllerBase
                 SELECT 
                     COUNT(*) as totalEMICount,
                     COALESCE(SUM(amount), 0) as totalEMI,
-                    COALESCE(SUM(paid_amount), 0) as totalPaid,
-                    COALESCE(SUM(late_fee), 0) as totalLateFee
+                    COALESCE(SUM(paid_amount), 0) as totalPaid
                 FROM monthly_emi 
                 WHERE member_id = @UserId";
             
@@ -149,14 +168,12 @@ public class MemberController : ControllerBase
             decimal totalEMI = 0;
             decimal totalPaid = 0;
             int emiCount = 0;
-            decimal lateFee = 0;
             
             if (emiReader.Read())
             {
                 totalEMI = Convert.ToDecimal(emiReader["totalEMI"]);
                 totalPaid = Convert.ToDecimal(emiReader["totalPaid"]);
                 emiCount = Convert.ToInt32(emiReader["totalEMICount"]);
-                lateFee = Convert.ToDecimal(emiReader["totalLateFee"]);
             }
             emiReader.Close();
             
@@ -164,7 +181,9 @@ public class MemberController : ControllerBase
             string loanQuery = @"
                 SELECT 
                     COUNT(*) as totalLoans,
-                    COALESCE(SUM(LoanAmount), 0) as totalLoanAmount
+                    COALESCE(SUM(LoanAmount), 0) as totalLoanAmount,
+                    COALESCE(SUM(PaidAmount), 0) as totalLoanPaid,
+                    COALESCE(SUM(TotalPayable), 0) as totalLoanPayable
                 FROM creditsocietydb_loans 
                 WHERE UserID = @UserId";
             
@@ -174,11 +193,15 @@ public class MemberController : ControllerBase
             
             int totalLoans = 0;
             decimal totalLoanAmount = 0;
+            decimal totalLoanPaid = 0;
+            decimal totalLoanPayable = 0;
             
             if (loanReader.Read())
             {
                 totalLoans = Convert.ToInt32(loanReader["totalLoans"]);
                 totalLoanAmount = Convert.ToDecimal(loanReader["totalLoanAmount"]);
+                totalLoanPaid = Convert.ToDecimal(loanReader["totalLoanPaid"]);
+                totalLoanPayable = Convert.ToDecimal(loanReader["totalLoanPayable"]);
             }
             
             return Ok(new
@@ -187,9 +210,11 @@ public class MemberController : ControllerBase
                 totalPaid,
                 remainingEMI = totalEMI - totalPaid,
                 emiCount,
-                lateFee,
                 totalLoans,
-                totalLoanAmount
+                totalLoanAmount,
+                totalLoanPaid,
+                totalLoanPayable,
+                remainingLoan = totalLoanPayable - totalLoanPaid
             });
         }
         catch (Exception ex)
@@ -198,7 +223,6 @@ public class MemberController : ControllerBase
         }
     }
 
-    // ✅ NEW - Dashboard Stats API (Total Members, Loans, EMI, Monthly Collection)
     [HttpGet("stats")]
     public IActionResult GetStats()
     {
@@ -207,22 +231,18 @@ public class MemberController : ControllerBase
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
             
-            // Total Members (excluding Admin)
             string memberQuery = "SELECT COUNT(*) FROM creditsocietydb_users WHERE Role = 'Member'";
             using var memberCmd = new MySqlCommand(memberQuery, conn);
             int totalMembers = Convert.ToInt32(memberCmd.ExecuteScalar());
             
-            // Total Loans
-            string loanQuery = "SELECT COUNT(*) FROM creditsocietydb_loans";
+            string loanQuery = "SELECT COUNT(*) FROM creditsocietydb_loans WHERE Status = 'Active'";
             using var loanCmd = new MySqlCommand(loanQuery, conn);
             int totalLoans = Convert.ToInt32(loanCmd.ExecuteScalar());
             
-            // Total EMI Records
             string emiQuery = "SELECT COUNT(*) FROM monthly_emi";
             using var emiCmd = new MySqlCommand(emiQuery, conn);
             int totalEMI = Convert.ToInt32(emiCmd.ExecuteScalar());
             
-            // This Month Collection
             string collectionQuery = @"
                 SELECT COALESCE(SUM(paid_amount), 0) 
                 FROM monthly_emi 

@@ -174,6 +174,11 @@ public class AuthController : ControllerBase
                     l.StartDate,
                     l.EndDate,
                     l.Status,
+                    l.PaidAmount,
+                    l.ClosingDate,
+                    l.TotalInterest,
+                    l.TotalPayable,
+                    l.IsClosed,
                     u.FullName as MemberName 
                 FROM creditsocietydb_loans l
                 LEFT JOIN creditsocietydb_users u ON l.UserID = u.Id
@@ -195,7 +200,12 @@ public class AuthController : ControllerBase
                     term = Convert.ToInt32(reader["LoanTerm"]),
                     startDate = reader["StartDate"] == DBNull.Value ? null : Convert.ToDateTime(reader["StartDate"]).ToString("yyyy-MM-dd"),
                     endDate = reader["EndDate"] == DBNull.Value ? null : Convert.ToDateTime(reader["EndDate"]).ToString("yyyy-MM-dd"),
-                    status = reader["Status"]?.ToString() ?? "Active"
+                    status = reader["Status"]?.ToString() ?? "Active",
+                    paidAmount = reader["PaidAmount"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["PaidAmount"]),
+                    closingDate = reader["ClosingDate"] == DBNull.Value ? null : Convert.ToDateTime(reader["ClosingDate"]).ToString("yyyy-MM-dd"),
+                    totalInterest = reader["TotalInterest"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["TotalInterest"]),
+                    totalPayable = reader["TotalPayable"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["TotalPayable"]),
+                    isClosed = reader["IsClosed"] == DBNull.Value ? false : Convert.ToBoolean(reader["IsClosed"])
                 });
             }
             
@@ -215,23 +225,28 @@ public class AuthController : ControllerBase
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
             
-            DateTime startDate = DateTime.Parse(model.StartDate);
+            // Parse start date safely
+            DateTime startDate;
+            if (!DateTime.TryParse(model.StartDate, out startDate))
+            {
+                return BadRequest(new { message = "Invalid start date format" });
+            }
+            
             DateTime endDate = startDate.AddMonths(model.LoanTerm);
             
             string query = @"
                 INSERT INTO creditsocietydb_loans 
-                (UserID, LoanAmount, InterestRate, LoanTerm, StartDate, EndDate, Status) 
+                (UserID, LoanAmount, InterestRate, LoanTerm, StartDate, EndDate, Status, PaidAmount, IsClosed) 
                 VALUES 
-                (@UserID, @LoanAmount, @InterestRate, @LoanTerm, @StartDate, @EndDate, @Status)";
+                (@UserID, @LoanAmount, @InterestRate, @LoanTerm, @StartDate, @EndDate, 'Active', 0, FALSE)";
             
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@UserID", model.UserID);
             cmd.Parameters.AddWithValue("@LoanAmount", model.LoanAmount);
             cmd.Parameters.AddWithValue("@InterestRate", model.InterestRate);
             cmd.Parameters.AddWithValue("@LoanTerm", model.LoanTerm);
-            cmd.Parameters.AddWithValue("@StartDate", model.StartDate);
+            cmd.Parameters.AddWithValue("@StartDate", startDate.ToString("yyyy-MM-dd"));
             cmd.Parameters.AddWithValue("@EndDate", endDate.ToString("yyyy-MM-dd"));
-            cmd.Parameters.AddWithValue("@Status", model.Status ?? "Active");
             
             cmd.ExecuteNonQuery();
             return Ok(new { message = "Loan added successfully" });
@@ -270,6 +285,45 @@ public class AuthController : ControllerBase
         }
     }
 
+    [HttpPut("loans/{id}/close")]
+    public IActionResult CloseLoan(int id, [FromBody] CloseLoanModel model)
+    {
+        try
+        {
+            using var conn = DatabaseHelper.GetConnection();
+            conn.Open();
+            
+            string query = @"
+                UPDATE creditsocietydb_loans 
+                SET Status = 'Closed',
+                    PaidAmount = @PaidAmount,
+                    ClosingDate = @ClosingDate,
+                    TotalInterest = @TotalInterest,
+                    TotalPayable = @TotalPayable,
+                    IsClosed = TRUE
+                WHERE LoanID = @Id";
+            
+            using var cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@PaidAmount", model.PaidAmount);
+            cmd.Parameters.AddWithValue("@ClosingDate", model.ClosingDate ?? DateTime.Now.ToString("yyyy-MM-dd"));
+            cmd.Parameters.AddWithValue("@TotalInterest", model.TotalInterest);
+            cmd.Parameters.AddWithValue("@TotalPayable", model.TotalPayable);
+            cmd.Parameters.AddWithValue("@Id", id);
+            
+            int rowsAffected = cmd.ExecuteNonQuery();
+            if (rowsAffected > 0)
+            {
+                return Ok(new { message = "Loan closed successfully" });
+            }
+            
+            return BadRequest(new { message = "Failed to close loan" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Server error: " + ex.Message });
+        }
+    }
+
     [HttpPut("users/{id}/password")]
     public IActionResult UpdatePassword(int id, [FromBody] PasswordModel model)
     {
@@ -286,7 +340,6 @@ public class AuthController : ControllerBase
             if (role == null)
                 return NotFound(new { message = "User not found" });
             
-            // Admin can update any member's password
             string query = "UPDATE creditsocietydb_users SET Password = @Password WHERE Id = @Id";
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@Password", model.NewPassword);
@@ -330,7 +383,14 @@ public class LoanModel
     public decimal InterestRate { get; set; }
     public int LoanTerm { get; set; }
     public string StartDate { get; set; } = "";
-    public string Status { get; set; } = "Active";
+}
+
+public class CloseLoanModel
+{
+    public decimal PaidAmount { get; set; }
+    public string? ClosingDate { get; set; }
+    public decimal TotalInterest { get; set; }
+    public decimal TotalPayable { get; set; }
 }
 
 public class PasswordModel

@@ -34,7 +34,7 @@ public class ReceiptController : ControllerBase
                 decimal amount = Convert.ToDecimal(reader["amount"]);
                 decimal paid = Convert.ToDecimal(reader["paid_amount"]);
                 string date = reader["payment_date"] == DBNull.Value ? "Not Paid" : Convert.ToDateTime(reader["payment_date"]).ToString("dd/MM/yyyy");
-                string mode = reader["payment_mode"] == DBNull.Value ? "N/A" : reader["payment_mode"].ToString();
+                string mode = reader["payment_mode"] == DBNull.Value ? "N/A" : reader["payment_mode"]?.ToString() ?? "N/A";
                 
                 StringBuilder csv = new StringBuilder();
                 csv.AppendLine("═══════════════════════════════════════");
@@ -92,6 +92,10 @@ public class ReceiptController : ControllerBase
                 int term = Convert.ToInt32(reader["LoanTerm"]);
                 string start = Convert.ToDateTime(reader["StartDate"]).ToString("dd/MM/yyyy");
                 string end = Convert.ToDateTime(reader["EndDate"]).ToString("dd/MM/yyyy");
+                decimal paid = reader["PaidAmount"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["PaidAmount"]);
+                decimal totalInterest = reader["TotalInterest"] == DBNull.Value ? (amount * rate / 100) : Convert.ToDecimal(reader["TotalInterest"]);
+                decimal totalPayable = reader["TotalPayable"] == DBNull.Value ? (amount + totalInterest) : Convert.ToDecimal(reader["TotalPayable"]);
+                string closingDate = reader["ClosingDate"] == DBNull.Value ? "Not Closed" : Convert.ToDateTime(reader["ClosingDate"]).ToString("dd/MM/yyyy");
                 
                 StringBuilder csv = new StringBuilder();
                 csv.AppendLine("═══════════════════════════════════════");
@@ -101,12 +105,13 @@ public class ReceiptController : ControllerBase
                 csv.AppendLine($"Date           : {DateTime.Now:dd/MM/yyyy}");
                 csv.AppendLine("───────────────────────────────────────");
                 csv.AppendLine($"Member Name    : {memberName}");
-                csv.AppendLine($"Loan Amount    : ₹{amount}");
+                csv.AppendLine($"Principal      : ₹{amount}");
                 csv.AppendLine($"Interest Rate  : {rate}%");
-                csv.AppendLine($"Term           : {term} months");
-                csv.AppendLine($"Start Date     : {start}");
-                csv.AppendLine($"End Date       : {end}");
-                csv.AppendLine($"Status         : {reader["Status"]}");
+                csv.AppendLine($"Interest Amount: ₹{totalInterest}");
+                csv.AppendLine($"Total Payable  : ₹{totalPayable}");
+                csv.AppendLine($"Paid Amount    : ₹{paid}");
+                csv.AppendLine($"Closing Date   : {closingDate}");
+                csv.AppendLine($"Status         : {(reader["IsClosed"] != DBNull.Value && Convert.ToBoolean(reader["IsClosed"]) ? "Closed" : reader["Status"])}");
                 csv.AppendLine("───────────────────────────────────────");
                 csv.AppendLine("Thank you for choosing Credit Society!");
                 csv.AppendLine("═══════════════════════════════════════");

@@ -159,6 +159,13 @@
             padding: 30px;
             color: #999;
         }
+        .interest-highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #f39c12;
+        }
     </style>
 </head>
 <body>
@@ -199,6 +206,16 @@
                     <div class="stat-card">
                         <div>Active Loans</div>
                         <h3 id="activeLoans">0</h3>
+                    </div>
+                </div>
+                <div class="stats-container" style="grid-template-columns: repeat(2, 1fr); margin-top: 15px;">
+                    <div class="stat-card">
+                        <div>Total Interest</div>
+                        <h3 id="totalInterest">₹0</h3>
+                    </div>
+                    <div class="stat-card">
+                        <div>Total Payable</div>
+                        <h3 id="totalPayable">₹0</h3>
                     </div>
                 </div>
             </div>
@@ -250,19 +267,26 @@
         <div id="my-loans-section" style="display: none;">
             <div class="card">
                 <h3>💰 My Loans</h3>
+                
+                <!-- Interest Info Card -->
+                <div class="interest-highlight">
+                    <strong>ℹ️ How Interest Works:</strong> Interest is calculated as (Principal × Interest Rate ÷ 100)<br>
+                    Example: ₹50,000 @ 8.5% = ₹4,250 interest, Total Payable = ₹54,250
+                </div>
+                
                 <table id="loansTable">
                     <thead>
                         <tr>
                             <th>Loan ID</th>
-                            <th>Amount</th>
-                            <th>Interest</th>
-                            <th>Term</th>
-                            <th>Start</th>
-                            <th>End</th>
+                            <th>Principal</th>
+                            <th>Interest %</th>
+                            <th>Interest Amt</th>
+                            <th>Total Payable</th>
                             <th>Paid</th>
                             <th>Remaining</th>
+                            <th>Start</th>
                             <th>Status</th>
-                            <th>Actions</th>
+                            <th>Receipt</th>
                         </tr>
                     </thead>
                     <tbody id="loansBody">
@@ -310,9 +334,9 @@
 
         async function loadAllData() {
             await loadMemberDetails();
-            await loadMonthlyEMI();
+            await loadStats();
             await loadLoans();
-            updateDashboard();
+            await loadMonthlyEMI();
         }
 
         async function loadMemberDetails() {
@@ -325,12 +349,22 @@
             } catch (e) { console.error(e); }
         }
 
-        async function loadMonthlyEMI() {
+        async function loadStats() {
             try {
-                let res = await fetch(`/api/Member/member/${memberId}/emi`);
+                let res = await fetch(`/api/Member/member/${memberId}/stats`);
                 if (res.ok) {
-                    monthlyEMI = await res.json();
-                    displayMonthlyEMI();
+                    let s = await res.json();
+                    
+                    // Loan stats
+                    document.getElementById('totalLoanAmount').innerText = '₹' + (s.totalLoanAmount || 0).toLocaleString('en-IN');
+                    document.getElementById('activeLoans').innerText = s.totalLoans || 0;
+                    document.getElementById('totalInterest').innerText = '₹' + ((s.totalLoanPayable - s.totalLoanAmount) || 0).toLocaleString('en-IN');
+                    document.getElementById('totalPayable').innerText = '₹' + (s.totalLoanPayable || 0).toLocaleString('en-IN');
+
+                    // EMI stats
+                    document.getElementById('totalMonthlyEMI').innerText = '₹' + (s.totalEMI || 0).toLocaleString('en-IN');
+                    document.getElementById('paidMonthlyEMI').innerText = '₹' + (s.totalPaid || 0).toLocaleString('en-IN');
+                    document.getElementById('pendingMonthlyEMI').innerText = '₹' + (s.remainingEMI || 0).toLocaleString('en-IN');
                 }
             } catch (e) { console.error(e); }
         }
@@ -341,6 +375,50 @@
                 if (res.ok) {
                     loans = await res.json();
                     displayLoans();
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function displayLoans() {
+            let tbody = document.getElementById('loansBody');
+            if (!loans || loans.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" class="no-data">No loans found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = loans.map(loan => {
+                let interestAmount = loan.totalInterest || (loan.amount * loan.interestRate / 100);
+                let totalPayable = loan.totalPayable || (loan.amount + interestAmount);
+                let paid = loan.paidAmount || 0;
+                let remaining = totalPayable - paid;
+                let statusClass = loan.isClosed ? 'success' : (loan.status === 'Active' ? 'success' : 'warning');
+                let statusText = loan.isClosed ? 'Closed' : loan.status;
+                
+                return `<tr>
+                    <td>${loan.loanId}</td>
+                    <td>₹${(loan.amount || 0).toLocaleString('en-IN')}</td>
+                    <td>${loan.interestRate}%</td>
+                    <td>₹${interestAmount.toLocaleString('en-IN')}</td>
+                    <td>₹${totalPayable.toLocaleString('en-IN')}</td>
+                    <td>₹${paid.toLocaleString('en-IN')}</td>
+                    <td>₹${remaining.toLocaleString('en-IN')}</td>
+                    <td>${loan.startDate || '-'}</td>
+                    <td><span class="badge-${statusClass}">${statusText}</span></td>
+                    <td>
+                        ${loan.isClosed ? 
+                            `<button class="btn btn-info" onclick="downloadReceipt('loan', ${loan.loanId})">📥 Receipt</button>` : 
+                            '-'}
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function loadMonthlyEMI() {
+            try {
+                let res = await fetch(`/api/Member/member/${memberId}/emi`);
+                if (res.ok) {
+                    monthlyEMI = await res.json();
+                    displayMonthlyEMI();
                 }
             } catch (e) { console.error(e); }
         }
@@ -367,53 +445,6 @@
                     </td>
                 </tr>`;
             }).join('');
-        }
-
-        function displayLoans() {
-            let tbody = document.getElementById('loansBody');
-            if (!loans || loans.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" class="no-data">No loans found</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = loans.map(loan => {
-                let paid = loan.paidAmount || 0;
-                let remaining = loan.amount - paid;
-                return `<tr>
-                    <td>${loan.loanId}</td>
-                    <td>₹${loan.amount}</td>
-                    <td>${loan.interestRate}%</td>
-                    <td>${loan.term} months</td>
-                    <td>${loan.startDate}</td>
-                    <td>${loan.endDate}</td>
-                    <td>₹${paid}</td>
-                    <td>₹${remaining}</td>
-                    <td><span class="badge-success">${loan.status}</span></td>
-                    <td>
-                        <button class="btn btn-info" onclick="downloadReceipt('loan', ${loan.loanId})">📥 Receipt</button>
-                    </td>
-                </tr>`;
-            }).join('');
-        }
-
-        function updateDashboard() {
-            // Calculate loan summary
-            let totalLoanAmount = 0;
-            loans.forEach(loan => totalLoanAmount += loan.amount || 0);
-            
-            document.getElementById('totalLoanAmount').innerText = '₹' + totalLoanAmount;
-            document.getElementById('activeLoans').innerText = loans.length;
-
-            // Calculate monthly EMI summary
-            let totalMonthly = 0, paidMonthly = 0;
-            monthlyEMI.forEach(emi => {
-                totalMonthly += 1000;
-                paidMonthly += emi.paidAmount || 0;
-            });
-            
-            document.getElementById('totalMonthlyEMI').innerText = '₹' + totalMonthly;
-            document.getElementById('paidMonthlyEMI').innerText = '₹' + paidMonthly;
-            document.getElementById('pendingMonthlyEMI').innerText = '₹' + (totalMonthly - paidMonthly);
         }
 
         function updateProfile() {

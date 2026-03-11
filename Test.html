@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head><title>Project Test</title></head>
+<body>
+    <h1>🚀 Credit Society Test Suite</h1>
+    <button onclick="testAll()">Run All Tests</button>
+    <div id="results"></div>
+    <script>
+        async function testAll() {
+            let results = document.getElementById('results');
+            results.innerHTML = '<h3>Testing...</h3>';
+            
+            let output = '';
+            
+            // Test 1: Backend Running?
+            try {
+                let res = await fetch('/api/Auth/users');
+                output += `✅ Backend: OK (${res.status})<br>`;
+            } catch {
+                output += `❌ Backend: NOT RUNNING<br>`;
+            }
+            
+            // Test 2: Database Users?
+            try {
+                let res = await fetch('/api/Auth/users');
+                let data = await res.json();
+                output += `✅ Database: ${data.length} users found<br>`;
+            } catch {
+                output += `❌ Database: ERROR<br>`;
+            }
+            
+            results.innerHTML = output;
+        }
+    </script>
+</body>
+</html>

@@ -138,6 +138,12 @@
             padding: 5px 10px;
             border-radius: 20px;
         }
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
         .modal {
             display: none;
             position: fixed;
@@ -171,10 +177,17 @@
             border-radius: 5px;
         }
         .search-box {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
             width: 250px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
         }
         .pagination {
             display: flex;
@@ -209,6 +222,7 @@
             display: flex;
             gap: 10px;
             align-items: center;
+            flex-wrap: wrap;
         }
         .empty-state {
             text-align: center;
@@ -271,7 +285,7 @@
                 <div class="card-header">
                     <h3>👥 Member Management</h3>
                     <div class="action-bar">
-                        <input type="text" class="search-box" id="memberSearch" placeholder="Search..." onkeyup="searchMembers()">
+                        <input type="text" class="search-box" id="memberSearch" placeholder="Search by name, email or phone..." onkeyup="searchMembers()">
                         <button class="btn btn-primary" onclick="showAddMemberModal()">➕ Add Member</button>
                     </div>
                 </div>
@@ -300,7 +314,7 @@
                 <div class="card-header">
                     <h3>💰 Loan Management</h3>
                     <div class="action-bar">
-                        <input type="text" class="search-box" id="loanSearch" placeholder="Search..." onkeyup="searchLoans()">
+                        <input type="text" class="search-box" id="loanSearch" placeholder="Search loans..." onkeyup="searchLoans()">
                         <button class="btn btn-primary" onclick="showAddLoanModal()">➕ Add Loan</button>
                     </div>
                 </div>
@@ -309,11 +323,12 @@
                         <tr>
                             <th>ID</th>
                             <th>Member</th>
-                            <th>Amount</th>
-                            <th>Interest</th>
+                            <th>Principal</th>
+                            <th>Interest %</th>
                             <th>Term</th>
                             <th>Start</th>
                             <th>End</th>
+                            <th>Paid</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -333,7 +348,7 @@
                         <select id="emiMonthSelector" class="search-box" onchange="loadEMIByMonth()">
                             <option value="">All Months</option>
                         </select>
-                        <input type="text" class="search-box" id="emiSearch" placeholder="Search..." onkeyup="searchEMI()">
+                        <input type="text" class="search-box" id="emiSearch" placeholder="Search EMI..." onkeyup="searchEMI()">
                         <button class="btn btn-primary" onclick="exportEMIToExcel()">📥 Export</button>
                     </div>
                 </div>
@@ -452,21 +467,13 @@
             </div>
             
             <div class="form-group">
-                <label>Username <span style="color:#e74c3c; font-size:12px;">(Capital first, min 4 chars, at least 1 number)</span></label>
-                <input type="text" id="memberUsername" placeholder="e.g. John123" onkeyup="validateMemberUsername()">
-                <div id="memberUsernameValidation" style="color:#e74c3c; font-size:12px; margin-top:5px; display:none;"></div>
-                <div class="strength-meter">
-                    <div id="memberUsernameStrength" style="height:100%; width:0%; transition:all 0.3s;"></div>
-                </div>
+                <label>Username</label>
+                <input type="text" id="memberUsername" placeholder="Enter username" onkeyup="checkAddMemberButton()">
             </div>
             
             <div class="form-group">
-                <label>Password <span style="color:#e74c3c; font-size:12px;">(Min 6 chars, 1 number, 1 special)</span></label>
-                <input type="password" id="memberPassword" placeholder="Enter password" onkeyup="validateMemberPassword()">
-                <div id="memberPasswordValidation" style="color:#e74c3c; font-size:12px; margin-top:5px; display:none;"></div>
-                <div class="strength-meter">
-                    <div id="memberPasswordStrength" style="height:100%; width:0%; transition:all 0.3s;"></div>
-                </div>
+                <label>Password</label>
+                <input type="password" id="memberPassword" placeholder="Enter password" onkeyup="checkAddMemberButton()">
             </div>
             
             <div class="form-group">
@@ -484,14 +491,74 @@
     <!-- Add Loan Modal -->
     <div id="addLoanModal" class="modal">
         <div class="modal-content">
-            <h3>💰 Add Loan</h3>
-            <div class="form-group"><label>Member</label><select id="loanMember"></select></div>
-            <div class="form-group"><label>Amount</label><input type="number" id="loanAmount"></div>
-            <div class="form-group"><label>Interest (%)</label><input type="number" step="0.1" id="loanInterest"></div>
-            <div class="form-group"><label>Term</label><input type="number" id="loanTerm" value="12"></div>
-            <div class="form-group"><label>Start Date</label><input type="date" id="loanStartDate"></div>
-            <button class="btn btn-success" onclick="addLoan()">Save</button>
-            <button class="btn btn-danger" onclick="closeModals()">Cancel</button>
+            <h3>💰 Add New Loan</h3>
+            <div class="form-group">
+                <label>Member</label>
+                <select id="loanMember" required>
+                    <option value="">Select Member</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Amount (₹)</label>
+                <input type="number" id="loanAmount" required>
+            </div>
+            <div class="form-group">
+                <label>Interest Rate (%)</label>
+                <input type="number" step="0.1" id="loanInterest" required>
+            </div>
+            <div class="form-group">
+                <label>Term (months)</label>
+                <input type="number" id="loanTerm" value="12" required>
+            </div>
+            <div class="form-group">
+                <label>Start Date</label>
+                <input type="date" id="loanStartDate" required>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success" onclick="addLoan()">💾 Save</button>
+                <button class="btn btn-danger" onclick="closeModals()">❌ Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Close Loan Modal -->
+    <div id="closeLoanModal" class="modal">
+        <div class="modal-content">
+            <h3>💰 Close Loan</h3>
+            <input type="hidden" id="closeLoanId">
+            <div class="form-group">
+                <label>Member Name</label>
+                <input type="text" id="closeMemberName" readonly>
+            </div>
+            <div class="form-group">
+                <label>Principal Amount</label>
+                <input type="text" id="closePrincipal" readonly>
+            </div>
+            <div class="form-group">
+                <label>Interest Rate (%)</label>
+                <input type="text" id="closeInterest" readonly>
+            </div>
+            <div class="form-group">
+                <label>Total Interest (Calculated)</label>
+                <input type="text" id="totalInterest" readonly>
+            </div>
+            <div class="form-group">
+                <label>Total Payable (Principal + Interest)</label>
+                <input type="text" id="totalPayable" readonly>
+            </div>
+            <div class="form-group">
+                <label>Amount Paid</label>
+                <input type="number" id="paidAmount" value="" required onkeyup="calculateCloseLoan()">
+            </div>
+            <div class="form-group">
+                <label>Closing Date</label>
+                <input type="date" id="closingDate" value="" required>
+            </div>
+            <div style="color: #27ae60; font-weight: bold; margin: 10px 0;" id="balanceMessage"></div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success" onclick="confirmCloseLoan()" id="confirmCloseBtn" disabled>✅ Close Loan</button>
+                <button class="btn btn-danger" onclick="closeLoanModal()">❌ Cancel</button>
+            </div>
         </div>
     </div>
 
@@ -501,12 +568,18 @@
             <h3>💰 Mark Payment</h3>
             <input type="hidden" id="paymentId">
             <div class="form-group"><label>Member</label><input type="text" id="paymentMemberName" readonly></div>
-            <div class="form-group"><label>Paid</label><input type="number" id="paymentPaid" value="1000"></div>
-            <div class="form-group"><label>Date</label><input type="date" id="paymentDate"></div>
-            <div class="form-group"><label>Mode</label><select id="paymentMode"><option value="Cash">Cash</option><option value="Online">Online</option></select></div>
+            <div class="form-group"><label>Paid Amount</label><input type="number" id="paymentPaid" value="1000"></div>
+            <div class="form-group"><label>Payment Date</label><input type="date" id="paymentDate"></div>
+            <div class="form-group"><label>Payment Mode</label>
+                <select id="paymentMode">
+                    <option value="Cash">Cash</option>
+                    <option value="Online">Online</option>
+                    <option value="Cheque">Cheque</option>
+                </select>
+            </div>
             <div class="form-group"><label>Late Fee</label><input type="number" id="paymentLateFee" value="0"></div>
-            <button class="btn btn-success" onclick="savePayment()">Save</button>
-            <button class="btn btn-danger" onclick="closePaymentModal()">Cancel</button>
+            <button class="btn btn-success" onclick="savePayment()">💾 Save</button>
+            <button class="btn btn-danger" onclick="closePaymentModal()">❌ Cancel</button>
         </div>
     </div>
 
@@ -520,14 +593,12 @@
                 <input type="text" id="passwordMemberName" readonly>
             </div>
             <div class="form-group">
-                <label>New Password <span style="color:#e74c3c; font-size:12px;">(Min 6 chars, 1 number, 1 special)</span></label>
-                <input type="password" id="newPassword" placeholder="Enter new password" onkeyup="validateNewPassword()">
-                <div id="newPasswordValidation" style="color:#e74c3c; font-size:12px; margin-top:5px; display:none;"></div>
+                <label>New Password</label>
+                <input type="password" id="newPassword" placeholder="Enter new password" onkeyup="checkPasswordMatch()">
             </div>
             <div class="form-group">
                 <label>Confirm Password</label>
-                <input type="password" id="confirmPassword" placeholder="Confirm new password" onkeyup="validateConfirmPassword()">
-                <div id="confirmPasswordValidation" style="color:#e74c3c; font-size:12px; margin-top:5px; display:none;"></div>
+                <input type="password" id="confirmPassword" placeholder="Confirm new password" onkeyup="checkPasswordMatch()">
             </div>
             <div style="display: flex; gap: 10px;">
                 <button class="btn btn-success" onclick="updatePassword()" id="updatePasswordBtn" disabled>💾 Update</button>
@@ -652,6 +723,8 @@
             tbody.innerHTML = '';
             let start = (currentLoanPage - 1) * itemsPerPage;
             loans.slice(start, start + itemsPerPage).forEach(l => {
+                let statusClass = l.isClosed ? 'info' : (l.status === 'Active' ? 'success' : 'warning');
+                let statusText = l.isClosed ? 'Closed' : l.status;
                 tbody.innerHTML += `<tr>
                     <td>${l.loanId}</td>
                     <td>${l.memberName}</td>
@@ -660,8 +733,15 @@
                     <td>${l.term} months</td>
                     <td>${l.startDate}</td>
                     <td>${l.endDate}</td>
-                    <td><span class="badge-success">${l.status}</span></td>
-                    <td><button class="btn btn-danger" onclick="deleteLoan(${l.loanId})">Delete</button></td>
+                    <td>₹${l.paidAmount || 0}</td>
+                    <td><span class="badge-${statusClass}">${statusText}</span></td>
+                    <td>
+                        ${!l.isClosed ? 
+                            `<button class="btn btn-success" onclick="showCloseLoanModal(${l.loanId}, '${l.memberName}', ${l.amount}, ${l.interest})">✅ Close</button>` : 
+                            `<button class="btn btn-info" onclick="downloadReceipt('loan', ${l.loanId})">📥 Receipt</button>`
+                        }
+                        <button class="btn btn-danger" onclick="deleteLoan(${l.loanId})">🗑️ Delete</button>
+                    </td>
                 </tr>`;
             });
             updatePagination('loan');
@@ -745,6 +825,9 @@
                     </td>
                 </tr>`;
             });
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No matching records found</td></tr>';
+            }
         }
 
         function exportEMIToExcel() {
@@ -910,135 +993,36 @@
                 });
         }
 
-        // Validation for member username
-        function validateMemberUsername() {
-            const username = document.getElementById('memberUsername').value;
-            const msgDiv = document.getElementById('memberUsernameValidation');
-            const input = document.getElementById('memberUsername');
-            const strengthDiv = document.getElementById('memberUsernameStrength');
-            
-            input.classList.remove('invalid', 'valid');
-            msgDiv.style.display = 'none';
-            strengthDiv.style.width = '0%';
-            strengthDiv.className = '';
-            
-            if (username.length === 0) {
-                checkAddMemberButton();
-                return false;
-            }
-            
-            if (username.length > 0) {
-                const firstChar = username.charAt(0);
-                if (firstChar !== firstChar.toUpperCase() || !isNaN(firstChar)) {
-                    msgDiv.style.display = 'block';
-                    msgDiv.innerText = '❌ First letter must be capital';
-                    input.classList.add('invalid');
-                    strengthDiv.style.width = '25%';
-                    checkAddMemberButton();
-                    return false;
-                }
-            }
-            
-            if (username.length < 4) {
-                msgDiv.style.display = 'block';
-                msgDiv.innerText = '❌ Username must be at least 4 characters';
-                input.classList.add('invalid');
-                strengthDiv.style.width = '25%';
-                checkAddMemberButton();
-                return false;
-            }
-            
-            if (!/\d/.test(username)) {
-                msgDiv.style.display = 'block';
-                msgDiv.innerText = '❌ Username must contain at least one number';
-                input.classList.add('invalid');
-                strengthDiv.style.width = '25%';
-                checkAddMemberButton();
-                return false;
-            }
-            
-            input.classList.add('valid');
-            strengthDiv.style.width = '100%';
-            msgDiv.style.display = 'none';
-            checkAddMemberButton();
-            return true;
-        }
-
-        function validateMemberPassword() {
-            const password = document.getElementById('memberPassword').value;
-            const msgDiv = document.getElementById('memberPasswordValidation');
-            const input = document.getElementById('memberPassword');
-            const strengthDiv = document.getElementById('memberPasswordStrength');
-            
-            input.classList.remove('invalid', 'valid');
-            msgDiv.style.display = 'none';
-            strengthDiv.style.width = '0%';
-            strengthDiv.className = '';
-            
-            if (password.length === 0) {
-                checkAddMemberButton();
-                return false;
-            }
-            
-            let strength = 0;
-            let errors = [];
-            
-            if (password.length < 6) {
-                errors.push('at least 6 characters');
-            } else {
-                strength++;
-            }
-            
-            if (!/\d/.test(password)) {
-                errors.push('one number');
-            } else {
-                strength++;
-            }
-            
-            if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-                errors.push('one special character');
-            } else {
-                strength++;
-            }
-            
-            if (errors.length > 0) {
-                msgDiv.style.display = 'block';
-                msgDiv.innerText = '❌ Password must contain: ' + errors.join(', ');
-                input.classList.add('invalid');
-                
-                if (strength === 1) strengthDiv.style.width = '33%';
-                else if (strength === 2) strengthDiv.style.width = '66%';
-                checkAddMemberButton();
-                return false;
-            }
-            
-            input.classList.add('valid');
-            strengthDiv.style.width = '100%';
-            msgDiv.style.display = 'none';
-            checkAddMemberButton();
-            return true;
-        }
-
+        // Add Member Functions
         function checkAddMemberButton() {
-            const usernameValid = validateMemberUsername();
-            const passwordValid = validateMemberPassword();
+            const username = document.getElementById('memberUsername').value;
+            const password = document.getElementById('memberPassword').value;
             const fullName = document.getElementById('memberFullName').value;
             const email = document.getElementById('memberEmail').value;
             const phone = document.getElementById('memberPhone').value;
             
-            document.getElementById('addMemberBtn').disabled = !(usernameValid && passwordValid && fullName && email && phone);
+            const isValid = username && password && fullName && email && phone;
+            document.getElementById('addMemberBtn').disabled = !isValid;
         }
 
         document.getElementById('memberFullName').addEventListener('keyup', checkAddMemberButton);
         document.getElementById('memberEmail').addEventListener('keyup', checkAddMemberButton);
         document.getElementById('memberPhone').addEventListener('keyup', checkAddMemberButton);
+        document.getElementById('memberUsername').addEventListener('keyup', checkAddMemberButton);
+        document.getElementById('memberPassword').addEventListener('keyup', checkAddMemberButton);
+
+        function showAddMemberModal() {
+            document.getElementById('memberFullName').value = '';
+            document.getElementById('memberEmail').value = '';
+            document.getElementById('memberPhone').value = '';
+            document.getElementById('memberUsername').value = '';
+            document.getElementById('memberPassword').value = '';
+            document.getElementById('memberAddress').value = '';
+            document.getElementById('addMemberBtn').disabled = true;
+            document.getElementById('addMemberModal').style.display = 'flex';
+        }
 
         async function addMember() {
-            if (!validateMemberUsername() || !validateMemberPassword()) {
-                alert('Please fix validation errors first');
-                return;
-            }
-            
             const member = {
                 username: document.getElementById('memberUsername').value,
                 password: document.getElementById('memberPassword').value,
@@ -1048,11 +1032,6 @@
                 address: document.getElementById('memberAddress').value,
                 role: 'Member'
             };
-            
-            if (!member.fullName || !member.email || !member.phone) {
-                alert('Please fill all required fields');
-                return;
-            }
             
             try {
                 const response = await fetch('/api/Auth/users', {
@@ -1065,14 +1044,6 @@
                     alert('✅ Member added successfully!');
                     closeModals();
                     loadMembers();
-                    
-                    document.getElementById('memberFullName').value = '';
-                    document.getElementById('memberEmail').value = '';
-                    document.getElementById('memberPhone').value = '';
-                    document.getElementById('memberUsername').value = '';
-                    document.getElementById('memberPassword').value = '';
-                    document.getElementById('memberAddress').value = '';
-                    document.getElementById('addMemberBtn').disabled = true;
                 } else {
                     const error = await response.json();
                     alert('❌ Error: ' + (error.message || 'Failed to add member'));
@@ -1082,154 +1053,60 @@
             }
         }
 
-        function showAddMemberModal() {
-            document.getElementById('memberFullName').value = '';
-            document.getElementById('memberEmail').value = '';
-            document.getElementById('memberPhone').value = '';
-            document.getElementById('memberUsername').value = '';
-            document.getElementById('memberPassword').value = '';
-            document.getElementById('memberAddress').value = '';
-            
-            document.getElementById('memberUsernameValidation').style.display = 'none';
-            document.getElementById('memberPasswordValidation').style.display = 'none';
-            document.getElementById('memberUsernameStrength').style.width = '0%';
-            document.getElementById('memberPasswordStrength').style.width = '0%';
-            document.getElementById('memberUsername').classList.remove('invalid', 'valid');
-            document.getElementById('memberPassword').classList.remove('invalid', 'valid');
-            
-            document.getElementById('addMemberBtn').disabled = true;
-            document.getElementById('addMemberModal').style.display = 'flex';
+        // Search Members Function - FIXED VERSION
+        let searchTimeout;
+        function searchMembers() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                performMemberSearch();
+            }, 300);
         }
 
-        // Password Edit Functions
-        function showPasswordModal(id, name) {
-            document.getElementById('passwordMemberId').value = id;
-            document.getElementById('passwordMemberName').value = name;
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmPassword').value = '';
-            document.getElementById('newPasswordValidation').style.display = 'none';
-            document.getElementById('confirmPasswordValidation').style.display = 'none';
-            document.getElementById('updatePasswordBtn').disabled = true;
-            document.getElementById('passwordModal').style.display = 'flex';
-        }
-
-        function closePasswordModal() {
-            document.getElementById('passwordModal').style.display = 'none';
-        }
-
-        function validateNewPassword() {
-            const password = document.getElementById('newPassword').value;
-            const msgDiv = document.getElementById('newPasswordValidation');
+        function performMemberSearch() {
+            let term = document.getElementById('memberSearch').value.toLowerCase();
+            let tbody = document.querySelector('#membersTable tbody');
             
-            if (password.length === 0) {
-                msgDiv.style.display = 'none';
-                checkPasswordMatch();
-                return false;
-            }
+            if (!tbody) return;
             
-            let errors = [];
-            
-            if (password.length < 6) {
-                errors.push('at least 6 characters');
-            }
-            
-            if (!/\d/.test(password)) {
-                errors.push('one number');
-            }
-            
-            if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-                errors.push('one special character');
-            }
-            
-            if (errors.length > 0) {
-                msgDiv.style.display = 'block';
-                msgDiv.innerText = '❌ Password must contain: ' + errors.join(', ');
-                checkPasswordMatch();
-                return false;
-            }
-            
-            msgDiv.style.display = 'none';
-            checkPasswordMatch();
-            return true;
-        }
-
-        function validateConfirmPassword() {
-            const password = document.getElementById('newPassword').value;
-            const confirm = document.getElementById('confirmPassword').value;
-            const msgDiv = document.getElementById('confirmPasswordValidation');
-            
-            if (confirm.length === 0) {
-                msgDiv.style.display = 'none';
-                checkPasswordMatch();
-                return false;
-            }
-            
-            if (password !== confirm) {
-                msgDiv.style.display = 'block';
-                msgDiv.innerText = '❌ Passwords do not match';
-                checkPasswordMatch();
-                return false;
-            }
-            
-            msgDiv.style.display = 'none';
-            checkPasswordMatch();
-            return true;
-        }
-
-        function checkPasswordMatch() {
-            const passwordValid = validateNewPassword();
-            const confirmValid = (document.getElementById('newPassword').value === document.getElementById('confirmPassword').value) && 
-                                 document.getElementById('confirmPassword').value.length > 0;
-            
-            document.getElementById('updatePasswordBtn').disabled = !(passwordValid && confirmValid);
-        }
-
-        async function updatePassword() {
-            if (!validateNewPassword() || !validateConfirmPassword()) {
-                alert('Please fix validation errors');
+            if (term === '') {
+                displayMembers();
                 return;
             }
             
-            const id = document.getElementById('passwordMemberId').value;
-            const newPassword = document.getElementById('newPassword').value;
-
-            try {
-                const response = await fetch(`/api/Auth/users/${id}/password`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ newPassword: newPassword })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    alert('✅ Password updated successfully!');
-                    closePasswordModal();
-                } else {
-                    alert('❌ Error: ' + (data.message || 'Failed to update password'));
-                }
-            } catch (error) {
-                alert('❌ Server error!');
+            let filtered = members.filter(m => 
+                (m.fullName && m.fullName.toLowerCase().includes(term)) || 
+                (m.email && m.email.toLowerCase().includes(term)) ||
+                (m.phone && m.phone.includes(term))
+            );
+            
+            tbody.innerHTML = '';
+            filtered.forEach(m => {
+                let memberLoans = loans.filter(l => l.userID == m.id).length;
+                let memberEMI = emiMonthlyData.filter(e => e.member_id == m.id).length;
+                tbody.innerHTML += `<tr>
+                    <td>${m.id}</td>
+                    <td>${m.fullName}</td>
+                    <td>${m.email}</td>
+                    <td>${m.phone}</td>
+                    <td>${memberLoans}</td>
+                    <td>${memberEMI}</td>
+                    <td><span class="badge-success">Active</span></td>
+                    <td>
+                        <button class="btn btn-danger" onclick="deleteMember(${m.id})">Delete</button>
+                        <button class="btn btn-warning" onclick="showPasswordModal(${m.id}, '${m.fullName}')">🔑 Edit Password</button>
+                    </td>
+                </tr>`;
+            });
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;">No members found</td></tr>';
             }
         }
 
-        // Update closeModals function
-        function closeModals() {
-            document.getElementById('addMemberModal').style.display = 'none';
-            document.getElementById('addLoanModal').style.display = 'none';
-            document.getElementById('paymentModal').style.display = 'none';
-            document.getElementById('passwordModal').style.display = 'none';
-        }
-
-        async function deleteMember(id) {
-            if (!confirm('Delete?')) return;
-            try {
-                await fetch(`/api/Auth/users/${id}`, { method: 'DELETE' });
-                alert('✅ Deleted');
-                loadMembers();
-                loadDashboardStats();
-                loadEMIByMonth();
-            } catch (e) { alert('❌ Error'); }
+        // Add Loan Functions
+        function showAddLoanModal() {
+            document.getElementById('loanStartDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('addLoanModal').style.display = 'flex';
         }
 
         async function addLoan() {
@@ -1238,49 +1115,247 @@
             let interest = document.getElementById('loanInterest').value;
             let term = document.getElementById('loanTerm').value;
             let startDate = document.getElementById('loanStartDate').value;
-            if (!memberId || !amount || !interest || !startDate) { alert('Fill all'); return; }
-            let loan = {
-                userID: parseInt(memberId),
-                loanAmount: parseFloat(amount),
-                interestRate: parseFloat(interest),
-                loanTerm: parseInt(term),
-                startDate: startDate
-            };
+            
+            if (!memberId || !amount || !interest || !term || !startDate) { 
+                alert('Please fill all fields'); 
+                return; 
+            }
+            
             try {
-                await fetch('/api/Auth/loans', {
+                const response = await fetch('/api/Auth/loans', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(loan)
+                    body: JSON.stringify({
+                        userID: parseInt(memberId),
+                        loanAmount: parseFloat(amount),
+                        interestRate: parseFloat(interest),
+                        loanTerm: parseInt(term),
+                        startDate: startDate
+                    })
                 });
-                alert('✅ Loan added');
-                closeModals();
-                loadLoans();
-                loadDashboardStats();
+                
+                if (response.ok) {
+                    alert('✅ Loan added successfully');
+                    closeModals();
+                    loadLoans();
+                } else {
+                    const error = await response.json();
+                    alert('❌ Error: ' + (error.message || 'Failed to add loan'));
+                }
+            } catch (error) {
+                alert('❌ Error: ' + error);
+            }
+        }
+
+        // Close Loan Functions
+        function showCloseLoanModal(loanId, memberName, amount, interest) {
+            document.getElementById('closeLoanId').value = loanId;
+            document.getElementById('closeMemberName').value = memberName;
+            document.getElementById('closePrincipal').value = '₹' + amount;
+            document.getElementById('closeInterest').value = interest + '%';
+            
+            let totalInterest = (amount * interest / 100);
+            let totalPayable = amount + totalInterest;
+            
+            document.getElementById('totalInterest').value = '₹' + totalInterest.toFixed(2);
+            document.getElementById('totalPayable').value = '₹' + totalPayable.toFixed(2);
+            document.getElementById('paidAmount').value = totalPayable.toFixed(2);
+            document.getElementById('closingDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('balanceMessage').innerHTML = '';
+            document.getElementById('confirmCloseBtn').disabled = false;
+            
+            document.getElementById('closeLoanModal').style.display = 'flex';
+        }
+
+        function calculateCloseLoan() {
+            let principal = parseFloat(document.getElementById('closePrincipal').value.replace('₹', ''));
+            let interest = parseFloat(document.getElementById('closeInterest').value.replace('%', ''));
+            let paid = parseFloat(document.getElementById('paidAmount').value);
+            
+            let totalInterest = (principal * interest / 100);
+            let totalPayable = principal + totalInterest;
+            let balance = totalPayable - paid;
+            
+            if (paid < totalPayable) {
+                document.getElementById('balanceMessage').innerHTML = `⚠️ Remaining: ₹${balance.toFixed(2)} (Short payment)`;
+                document.getElementById('confirmCloseBtn').disabled = true;
+            } else if (paid > totalPayable) {
+                document.getElementById('balanceMessage').innerHTML = `⚠️ Extra payment: ₹${(paid - totalPayable).toFixed(2)}`;
+                document.getElementById('confirmCloseBtn').disabled = true;
+            } else {
+                document.getElementById('balanceMessage').innerHTML = `✅ Exact payment!`;
+                document.getElementById('confirmCloseBtn').disabled = false;
+            }
+        }
+
+        function closeLoanModal() {
+            document.getElementById('closeLoanModal').style.display = 'none';
+        }
+
+        async function confirmCloseLoan() {
+            let loanId = document.getElementById('closeLoanId').value;
+            let paidAmount = document.getElementById('paidAmount').value;
+            let closingDate = document.getElementById('closingDate').value;
+            
+            let principal = parseFloat(document.getElementById('closePrincipal').value.replace('₹', ''));
+            let interest = parseFloat(document.getElementById('closeInterest').value.replace('%', ''));
+            let totalInterest = (principal * interest / 100);
+            let totalPayable = principal + totalInterest;
+            
+            try {
+                const response = await fetch(`/api/Auth/loans/${loanId}/close`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        paidAmount: parseFloat(paidAmount),
+                        closingDate: closingDate,
+                        totalInterest: totalInterest,
+                        totalPayable: totalPayable
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('✅ Loan closed successfully!');
+                    closeLoanModal();
+                    loadLoans();
+                } else {
+                    alert('❌ Failed to close loan');
+                }
+            } catch (error) {
+                alert('❌ Error: ' + error);
+            }
+        }
+
+        // Password Edit Functions
+        function showPasswordModal(id, name) {
+            document.getElementById('passwordMemberId').value = id;
+            document.getElementById('passwordMemberName').value = name;
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            document.getElementById('updatePasswordBtn').disabled = true;
+            document.getElementById('passwordModal').style.display = 'flex';
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+        }
+
+        function checkPasswordMatch() {
+            const password = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            
+            const isValid = password && confirm && (password === confirm);
+            document.getElementById('updatePasswordBtn').disabled = !isValid;
+        }
+
+        document.getElementById('newPassword').addEventListener('keyup', checkPasswordMatch);
+        document.getElementById('confirmPassword').addEventListener('keyup', checkPasswordMatch);
+
+        async function updatePassword() {
+            const id = document.getElementById('passwordMemberId').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!newPassword || !confirmPassword) {
+                alert('Please fill both password fields');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/Auth/users/${id}/password`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ newPassword: newPassword })
+                });
+
+                if (response.ok) {
+                    alert('✅ Password updated successfully!');
+                    closePasswordModal();
+                } else {
+                    alert('❌ Failed to update password');
+                }
+            } catch (error) {
+                alert('❌ Server error!');
+            }
+        }
+
+        // Delete Functions
+        async function deleteMember(id) {
+            if (!confirm('Delete this member?')) return;
+            try {
+                const response = await fetch(`/api/Auth/users/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    alert('✅ Member deleted');
+                    loadMembers();
+                    loadDashboardStats();
+                    loadEMIByMonth();
+                }
             } catch (e) { alert('❌ Error'); }
         }
 
         async function deleteLoan(id) {
-            if (!confirm('Delete loan?')) return;
+            if (!confirm('Delete this loan?')) return;
             try {
-                await fetch(`/api/Auth/loans/${id}`, { method: 'DELETE' });
-                alert('✅ Deleted');
-                loadLoans();
-                loadDashboardStats();
+                const response = await fetch(`/api/Auth/loans/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    alert('✅ Loan deleted');
+                    loadLoans();
+                    loadDashboardStats();
+                }
             } catch (e) { alert('❌ Error'); }
         }
 
-        function searchMembers() {
-            let term = document.getElementById('memberSearch').value.toLowerCase();
-            let filtered = members.filter(m => m.fullName?.toLowerCase().includes(term));
-            // Display filtered members logic here
-        }
-
+        // Search Loans Function
         function searchLoans() {
             let term = document.getElementById('loanSearch').value.toLowerCase();
-            let filtered = loans.filter(l => l.memberName?.toLowerCase().includes(term));
-            // Display filtered loans logic here
+            let tbody = document.querySelector('#loansTable tbody');
+            
+            if (!tbody) return;
+            
+            if (term === '') {
+                displayLoans();
+                return;
+            }
+            
+            let filtered = loans.filter(l => 
+                (l.memberName && l.memberName.toLowerCase().includes(term))
+            );
+            
+            tbody.innerHTML = '';
+            filtered.forEach(l => {
+                let statusClass = l.isClosed ? 'info' : (l.status === 'Active' ? 'success' : 'warning');
+                let statusText = l.isClosed ? 'Closed' : l.status;
+                tbody.innerHTML += `<tr>
+                    <td>${l.loanId}</td>
+                    <td>${l.memberName}</td>
+                    <td>₹${l.amount}</td>
+                    <td>${l.interest}%</td>
+                    <td>${l.term} months</td>
+                    <td>${l.startDate}</td>
+                    <td>${l.endDate}</td>
+                    <td>₹${l.paidAmount || 0}</td>
+                    <td><span class="badge-${statusClass}">${statusText}</span></td>
+                    <td>
+                        ${!l.isClosed ? 
+                            `<button class="btn btn-success" onclick="showCloseLoanModal(${l.loanId}, '${l.memberName}', ${l.amount}, ${l.interest})">✅ Close</button>` : 
+                            `<button class="btn btn-info" onclick="downloadReceipt('loan', ${l.loanId})">📥 Receipt</button>`
+                        }
+                        <button class="btn btn-danger" onclick="deleteLoan(${l.loanId})">🗑️ Delete</button>
+                    </td>
+                </tr>`;
+            });
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:30px;">No loans found</td></tr>';
+            }
         }
 
+        // Report Function
         function generateReport(type) {
             let total = 0, paid = 0;
             emiMonthlyData.forEach(e => {
@@ -1289,14 +1364,15 @@
             });
             document.getElementById('reportContent').innerHTML = `
                 <h4>${type} Report</h4>
-                <table>
-                    <tr><th>Total Members</th><td>${members.length}</td></tr>
-                    <tr><th>Total EMI</th><td>₹${total}</td></tr>
-                    <tr><th>Collected</th><td>₹${paid}</td></tr>
-                    <tr><th>Pending</th><td>₹${total - paid}</td></tr>
+                <table style="width:100%; margin-top:15px;">
+                    <tr><th style="padding:10px; background:#f8f9fa;">Total Members</th><td style="padding:10px;">${members.length}</td></tr>
+                    <tr><th style="padding:10px; background:#f8f9fa;">Total EMI</th><td style="padding:10px;">₹${total}</td></tr>
+                    <tr><th style="padding:10px; background:#f8f9fa;">Collected</th><td style="padding:10px;">₹${paid}</td></tr>
+                    <tr><th style="padding:10px; background:#f8f9fa;">Pending</th><td style="padding:10px;">₹${total - paid}</td></tr>
                 </table>`;
         }
 
+        // Section Navigation
         function showSection(section) {
             const sections = ['dashboard', 'members', 'loans', 'emi', 'monthly', 'reports'];
             sections.forEach(s => {
@@ -1314,8 +1390,21 @@
             }
         }
 
+        // Close Modals
+        function closeModals() {
+            document.getElementById('addMemberModal').style.display = 'none';
+            document.getElementById('addLoanModal').style.display = 'none';
+            document.getElementById('closeLoanModal').style.display = 'none';
+            document.getElementById('paymentModal').style.display = 'none';
+            document.getElementById('passwordModal').style.display = 'none';
+        }
+
+        // Logout
         function logout() {
-            if (confirm('Logout?')) window.location.href = '/Login.html';
+            if (confirm('Logout?')) {
+                localStorage.removeItem('user');
+                window.location.href = '/Login.html';
+            }
         }
     </script>
 </body>
