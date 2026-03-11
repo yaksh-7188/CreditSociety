@@ -23,272 +23,322 @@
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            width: 450px;
-            max-width: 90%;
+            width: 420px;
+            max-width: 95%;
         }
-        h2 {
+        .logo {
             text-align: center;
+            margin-bottom: 28px;
+        }
+        .logo h2 {
             color: #667eea;
-            margin-bottom: 30px;
-            font-size: 32px;
+            font-size: 30px;
+            font-weight: 700;
+        }
+        .logo p {
+            color: #888;
+            font-size: 13px;
+            margin-top: 4px;
         }
         .role-selector {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 16px;
+            margin-bottom: 28px;
         }
-        .role-selector label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            padding: 10px 20px;
-            border-radius: 10px;
-            transition: all 0.3s;
+        .role-option {
+            flex: 1;
+            max-width: 160px;
         }
-        .role-selector label:hover {
-            background: #f0f0f0;
-        }
-        .input-group {
-            margin-bottom: 20px;
-        }
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #555;
-        }
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        .input-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
-        }
-        .input-group input.invalid {
-            border-color: #e74c3c;
-        }
-        .input-group input.valid {
-            border-color: #27ae60;
-        }
-        .validation-msg {
-            font-size: 12px;
-            margin-top: 5px;
-            color: #e74c3c;
+        .role-option input[type="radio"] {
             display: none;
         }
-        button {
+        .role-option label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+            font-weight: 500;
+            color: #666;
+            width: 100%;
+            user-select: none;
+        }
+        .role-option input[type="radio"]:checked + label {
+            border-color: #667eea;
+            background: #f0f1ff;
+            color: #667eea;
+        }
+        .role-option label:hover {
+            border-color: #667eea;
+            background: #f9f9ff;
+        }
+        .form-group {
+            margin-bottom: 18px;
+            position: relative;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 6px;
+        }
+        .form-group label span.required {
+            color: #e74c3c;
+            margin-left: 2px;
+        }
+        .input-wrapper {
+            position: relative;
+        }
+        .input-wrapper input {
+            width: 100%;
+            padding: 12px 42px 12px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+            color: #333;
+        }
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+        }
+        .input-wrapper input.error-field {
+            border-color: #e74c3c;
+        }
+        .input-wrapper input.error-field:focus {
+            box-shadow: 0 0 0 3px rgba(231,76,60,0.15);
+        }
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #aaa;
+            user-select: none;
+            transition: color 0.2s;
+        }
+        .toggle-password:hover {
+            color: #667eea;
+        }
+        .field-error {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        .field-error.visible {
+            display: block;
+        }
+        .login-btn {
             width: 100%;
             padding: 14px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: bold;
             cursor: pointer;
-            margin: 20px 0;
+            margin: 8px 0 16px 0;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 50px;
         }
-        button:hover {
+        .login-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(102,126,234,0.4);
         }
-        button:disabled {
-            opacity: 0.6;
+        .login-btn:disabled {
+            opacity: 0.7;
             cursor: not-allowed;
+            transform: none;
+        }
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .alert-box {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            text-align: center;
+            display: none;
+        }
+        .alert-box.error {
+            background: #fff2f2;
+            border: 1px solid #f5c6cb;
+            color: #c0392b;
+        }
+        .alert-box.success {
+            background: #f0fff4;
+            border: 1px solid #c3e6cb;
+            color: #27ae60;
+        }
+        .alert-box.visible {
+            display: block;
         }
         .footer {
             text-align: center;
-            color: #999;
-            font-size: 14px;
-            margin-top: 20px;
+            color: #bbb;
+            font-size: 12px;
+            margin-top: 10px;
         }
-        .message {
-            text-align: center;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            display: none;
-        }
-        .message.error {
-            background: #fee;
-            color: #c33;
-            display: block;
-        }
-        .message.success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            display: block;
-        }
-        .strength-meter {
-            height: 4px;
-            background: #e0e0e0;
-            border-radius: 2px;
-            margin-top: 5px;
-            overflow: hidden;
-        }
-        .strength-bar {
-            height: 100%;
-            width: 0%;
-            transition: all 0.3s;
-        }
-        .strength-bar.weak { background: #e74c3c; width: 33%; }
-        .strength-bar.medium { background: #f39c12; width: 66%; }
-        .strength-bar.strong { background: #27ae60; width: 100%; }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <h2>🏦 Credit Society</h2>
-        
+        <div class="logo">
+            <h2>🏦 Credit Society</h2>
+            <p>Management System — Secure Login</p>
+        </div>
+
         <div class="role-selector">
-            <input type="radio" name="role" id="roleAdmin" value="Admin" checked style="display: none;">
-            <label for="roleAdmin">👑 Admin</label>
-            
-            <input type="radio" name="role" id="roleMember" value="Member" style="display: none;">
-            <label for="roleMember">👤 Member</label>
-        </div>
-
-        <div class="input-group">
-            <label>Username</label>
-            <input type="text" id="username" placeholder="Enter your username" onkeyup="validateUsername()">
-            <div id="usernameValidation" class="validation-msg"></div>
-            <div class="strength-meter" id="usernameStrength" style="display: none;">
-                <div class="strength-bar"></div>
+            <div class="role-option">
+                <input type="radio" id="roleAdmin" name="role" value="Admin" checked>
+                <label for="roleAdmin">👑 Admin</label>
+            </div>
+            <div class="role-option">
+                <input type="radio" id="roleMember" name="role" value="Member">
+                <label for="roleMember">👤 Member</label>
             </div>
         </div>
 
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" id="password" placeholder="Enter your password" onkeyup="validatePassword()">
-            <div id="passwordValidation" class="validation-msg"></div>
-            <div class="strength-meter">
-                <div class="strength-bar" id="passwordStrength"></div>
+        <div id="alertBox" class="alert-box error"></div>
+
+        <div class="form-group">
+            <label for="username">Username <span class="required">*</span></label>
+            <div class="input-wrapper">
+                <input type="text" id="username" placeholder="Enter your username"
+                    autocomplete="username" maxlength="50"
+                    oninput="clearFieldError('username')">
             </div>
+            <div class="field-error" id="usernameError">Username is required.</div>
         </div>
 
-        <button onclick="login()" id="loginBtn" disabled>Login</button>
-        
-        <div id="message" class="message"></div>
-        
-        <div class="footer">
-            © 2026 Credit Society Management System
+        <div class="form-group">
+            <label for="password">Password <span class="required">*</span></label>
+            <div class="input-wrapper">
+                <input type="password" id="password" placeholder="Enter your password"
+                    autocomplete="current-password" maxlength="100"
+                    oninput="clearFieldError('password')"
+                    onkeydown="handleEnter(event)">
+                <span class="toggle-password" onclick="togglePassword()" id="eyeIcon" title="Show/Hide Password">👁️</span>
+            </div>
+            <div class="field-error" id="passwordError">Password is required.</div>
         </div>
+
+        <button class="login-btn" id="loginBtn" onclick="login()">
+            <span class="spinner" id="spinner"></span>
+            <span id="btnText">Login</span>
+        </button>
+
+        <div class="footer">© 2026 Credit Society Management System</div>
     </div>
 
     <script>
-        function validateUsername() {
-            const username = document.getElementById('username').value;
-            const msgDiv = document.getElementById('usernameValidation');
-            const input = document.getElementById('username');
-            
-            input.classList.remove('invalid', 'valid');
-            msgDiv.style.display = 'none';
-            
-            if (username.length > 0) {
-                const firstChar = username.charAt(0);
-                if (firstChar !== firstChar.toUpperCase() || !isNaN(firstChar)) {
-                    msgDiv.style.display = 'block';
-                    msgDiv.innerText = '❌ First letter must be capital';
-                    input.classList.add('invalid');
-                    return false;
-                }
-            }
-            
-            if (username.length < 4) {
-                msgDiv.style.display = 'block';
-                msgDiv.innerText = '❌ Username must be at least 4 characters';
-                input.classList.add('invalid');
-                return false;
-            }
-            
-            if (!/\d/.test(username)) {
-                msgDiv.style.display = 'block';
-                msgDiv.innerText = '❌ Username must contain at least one number';
-                input.classList.add('invalid');
-                return false;
-            }
-            
-            input.classList.add('valid');
-            return true;
-        }
-        
-        function validatePassword() {
-            const password = document.getElementById('password').value;
-            const msgDiv = document.getElementById('passwordValidation');
+        function togglePassword() {
             const input = document.getElementById('password');
-            const strengthBar = document.getElementById('passwordStrength');
-            
-            input.classList.remove('invalid', 'valid');
-            msgDiv.style.display = 'none';
-            strengthBar.className = 'strength-bar';
-            
-            if (password.length === 0) return false;
-            
-            let strength = 0;
-            let errors = [];
-            
-            if (password.length < 6) {
-                errors.push('at least 6 characters');
+            const icon  = document.getElementById('eyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = '🙈';
             } else {
-                strength++;
+                input.type = 'password';
+                icon.textContent = '👁️';
             }
-            
-            if (!/\d/.test(password)) {
-                errors.push('one number');
-            } else {
-                strength++;
-            }
-            
-            if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-                errors.push('one special character');
-            } else {
-                strength++;
-            }
-            
-            if (errors.length > 0) {
-                msgDiv.style.display = 'block';
-                msgDiv.innerText = '❌ Password must contain: ' + errors.join(', ');
-                input.classList.add('invalid');
-                
-                if (strength === 1) strengthBar.className = 'strength-bar weak';
-                else if (strength === 2) strengthBar.className = 'strength-bar medium';
-                return false;
-            }
-            
-            input.classList.add('valid');
-            strengthBar.className = 'strength-bar strong';
-            return true;
         }
-        
-        function checkValidations() {
-            document.getElementById('loginBtn').disabled = !(validateUsername() && validatePassword());
-        }
-        
-        document.getElementById('username').addEventListener('keyup', checkValidations);
-        document.getElementById('password').addEventListener('keyup', checkValidations);
-        
-        async function login() {
-            if (!checkValidations()) return;
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const role = document.querySelector('input[name="role"]:checked').value;
-            const messageDiv = document.getElementById('message');
-            const loginBtn = document.getElementById('loginBtn');
 
-            messageDiv.className = 'message';
-            messageDiv.style.display = 'none';
-            loginBtn.disabled = true;
-            loginBtn.innerText = 'Logging in...';
+        function handleEnter(e) {
+            if (e.key === 'Enter') login();
+        }
+
+        function clearFieldError(fieldId) {
+            document.getElementById(fieldId).classList.remove('error-field');
+            document.getElementById(fieldId + 'Error').classList.remove('visible');
+            hideAlert();
+        }
+
+        function showAlert(msg, type = 'error') {
+            const box = document.getElementById('alertBox');
+            box.textContent = msg;
+            box.className = 'alert-box ' + type + ' visible';
+        }
+
+        function hideAlert() {
+            document.getElementById('alertBox').classList.remove('visible');
+        }
+
+        function validate() {
+            let valid = true;
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!username) {
+                document.getElementById('username').classList.add('error-field');
+                document.getElementById('usernameError').textContent = 'Username is required.';
+                document.getElementById('usernameError').classList.add('visible');
+                valid = false;
+            } else if (username.length < 3) {
+                document.getElementById('username').classList.add('error-field');
+                document.getElementById('usernameError').textContent = 'Username must be at least 3 characters.';
+                document.getElementById('usernameError').classList.add('visible');
+                valid = false;
+            }
+
+            if (!password) {
+                document.getElementById('password').classList.add('error-field');
+                document.getElementById('passwordError').textContent = 'Password is required.';
+                document.getElementById('passwordError').classList.add('visible');
+                valid = false;
+            } else if (password.length < 4) {
+                document.getElementById('password').classList.add('error-field');
+                document.getElementById('passwordError').textContent = 'Password must be at least 4 characters.';
+                document.getElementById('passwordError').classList.add('visible');
+                valid = false;
+            }
+
+            return valid;
+        }
+
+        function setLoading(isLoading) {
+            const btn     = document.getElementById('loginBtn');
+            const spinner = document.getElementById('spinner');
+            const btnText = document.getElementById('btnText');
+            btn.disabled = isLoading;
+            spinner.style.display = isLoading ? 'block' : 'none';
+            btnText.textContent = isLoading ? 'Logging in...' : 'Login';
+        }
+
+        async function login() {
+            hideAlert();
+            if (!validate()) return;
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const role     = document.querySelector('input[name="role"]:checked').value;
+
+            setLoading(true);
 
             try {
                 const response = await fetch('/api/Auth/login', {
@@ -302,40 +352,32 @@
                 if (response.ok) {
                     if (data.role === role) {
                         localStorage.setItem('user', JSON.stringify(data));
-                        messageDiv.className = 'message success';
-                        messageDiv.innerText = '✅ Login successful! Redirecting...';
-                        messageDiv.style.display = 'block';
+                        showAlert('✅ Login successful! Redirecting...', 'success');
                         setTimeout(() => {
                             window.location.href = role === 'Admin' ? '/admin.html' : '/member.html';
-                        }, 1000);
+                        }, 800);
                     } else {
-                        messageDiv.className = 'message error';
-                        messageDiv.innerText = '❌ Wrong role selected!';
-                        messageDiv.style.display = 'block';
-                        loginBtn.disabled = false;
-                        loginBtn.innerText = 'Login';
+                        const correctRole = data.role;
+                        showAlert('❌ You are registered as "' + correctRole + '". Please select "' + correctRole + '" role.');
+                        setLoading(false);
                     }
+                } else if (response.status === 401) {
+                    showAlert('❌ Incorrect username or password. Please try again.');
+                    document.getElementById('password').value = '';
+                    setLoading(false);
                 } else {
-                    messageDiv.className = 'message error';
-                    messageDiv.innerText = '❌ Invalid credentials!';
-                    messageDiv.style.display = 'block';
-                    loginBtn.disabled = false;
-                    loginBtn.innerText = 'Login';
+                    showAlert('❌ ' + (data.message || 'Login failed. Please try again.'));
+                    setLoading(false);
                 }
             } catch (error) {
-                messageDiv.className = 'message error';
-                messageDiv.innerText = '❌ Server error!';
-                messageDiv.style.display = 'block';
-                loginBtn.disabled = false;
-                loginBtn.innerText = 'Login';
+                showAlert('❌ Cannot connect to server. Please check your connection.');
+                setLoading(false);
             }
         }
 
-        document.getElementById('password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !document.getElementById('loginBtn').disabled) {
-                login();
-            }
-        });
+        window.onload = function () {
+            document.getElementById('username').focus();
+        };
     </script>
 </body>
 </html>
