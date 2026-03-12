@@ -386,41 +386,38 @@
         }
 
         function displayLoans(loans) {
-            let tbody = document.getElementById('loansBody');
-            
-            // ✅ AGAR LOANS NAHI HAI TO SIRF MESSAGE DIKHAO
-            if (!loans || loans.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" class="no-data">📭 No loans taken yet</td></tr>';
-                return;
-            }
-            
-            // ✅ AGAR LOANS HAI TO HI DIKHAO
-            tbody.innerHTML = loans.map(loan => {
-                let interestAmount = loan.totalInterest || (loan.amount * loan.interestRate / 100);
-                let totalPayable = loan.totalPayable || (loan.amount + interestAmount);
-                let paid = loan.paidAmount || 0;
-                let remaining = totalPayable - paid;
-                let statusClass = loan.isClosed ? 'info' : (loan.status === 'Active' ? 'success' : 'warning');
-                let statusText = loan.isClosed ? 'Closed' : loan.status;
-                
-                return `<tr>
-                    <td>${loan.loanId}</td>
-                    <td>₹${(loan.amount || 0).toLocaleString('en-IN')}</td>
-                    <td>${loan.interestRate}%</td>
-                    <td>₹${interestAmount.toLocaleString('en-IN')}</td>
-                    <td>₹${totalPayable.toLocaleString('en-IN')}</td>
-                    <td>₹${paid.toLocaleString('en-IN')}</td>
-                    <td>₹${remaining.toLocaleString('en-IN')}</td>
-                    <td>${loan.startDate || '-'}</td>
-                    <td><span class="badge-${statusClass}">${statusText}</span></td>
-                    <td>
-                        ${loan.isClosed ? 
-                            `<button class="btn btn-info" onclick="downloadReceipt('loan', ${loan.loanId})">📥 Receipt</button>` : 
-                            '-'}
-                    </td>
-                </tr>`;
-            }).join('');
-        }
+    let tbody = document.getElementById('loansBody');
+    
+    if (!loans || loans.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="no-data">📭 No loans taken yet</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = loans.map(loan => {
+        // ✅ Interest calculation
+        let interestAmount = (loan.amount * loan.interestRate / 100);
+        let totalPayable = loan.amount + interestAmount;
+        let paid = loan.paidAmount || 0;
+        let remaining = totalPayable - paid;
+        
+        return `<tr>
+            <td>${loan.loanId}</td>
+            <td>₹${loan.amount}</td>
+            <td>${loan.interestRate}%</td>
+            <td>₹${interestAmount.toFixed(2)}</td>
+            <td>₹${totalPayable.toFixed(2)}</td>
+            <td>₹${paid}</td>
+            <td>₹${remaining.toFixed(2)}</td>
+            <td>${loan.startDate || '-'}</td>
+            <td><span class="badge-${loan.status === 'Active' ? 'success' : 'info'}">${loan.status}</span></td>
+            <td>
+                ${loan.status === 'Closed' ? 
+                    `<button class="btn btn-info" onclick="downloadReceipt('loan', ${loan.loanId})">📥 Receipt</button>` : 
+                    '-'}
+            </td>
+        </tr>`;
+    }).join('');
+}
 
         async function loadMonthlyEMI() {
             try {

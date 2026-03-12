@@ -64,9 +64,7 @@ public class MemberController : ControllerBase
                     ClosingDate,
                     TotalInterest,
                     TotalPayable,
-                    IsClosed,
-                    (LoanAmount * InterestRate / 100) as CalculatedInterest,
-                    (LoanAmount + (LoanAmount * InterestRate / 100)) as TotalWithInterest
+                    IsClosed
                 FROM creditsocietydb_loans 
                 WHERE UserID = @UserId
                 ORDER BY StartDate DESC";
@@ -89,8 +87,8 @@ public class MemberController : ControllerBase
                     status = reader["Status"]?.ToString() ?? "Active",
                     paidAmount = reader["PaidAmount"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["PaidAmount"]),
                     closingDate = reader["ClosingDate"] == DBNull.Value ? null : Convert.ToDateTime(reader["ClosingDate"]).ToString("dd/MM/yyyy"),
-                    totalInterest = reader["TotalInterest"] == DBNull.Value ? Convert.ToDecimal(reader["CalculatedInterest"]) : Convert.ToDecimal(reader["TotalInterest"]),
-                    totalPayable = reader["TotalPayable"] == DBNull.Value ? Convert.ToDecimal(reader["TotalWithInterest"]) : Convert.ToDecimal(reader["TotalPayable"]),
+                    totalInterest = reader["TotalInterest"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["TotalInterest"]),
+                    totalPayable = reader["TotalPayable"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["TotalPayable"]),
                     isClosed = reader["IsClosed"] == DBNull.Value ? false : Convert.ToBoolean(reader["IsClosed"])
                 });
             }
@@ -157,7 +155,8 @@ public class MemberController : ControllerBase
                 SELECT 
                     COUNT(*) as totalEMICount,
                     COALESCE(SUM(amount), 0) as totalEMI,
-                    COALESCE(SUM(paid_amount), 0) as totalPaid
+                    COALESCE(SUM(paid_amount), 0) as totalPaid,
+                    COALESCE(SUM(late_fee), 0) as totalLateFee
                 FROM monthly_emi 
                 WHERE member_id = @UserId";
             
@@ -168,12 +167,14 @@ public class MemberController : ControllerBase
             decimal totalEMI = 0;
             decimal totalPaid = 0;
             int emiCount = 0;
+            decimal lateFee = 0;
             
             if (emiReader.Read())
             {
                 totalEMI = Convert.ToDecimal(emiReader["totalEMI"]);
                 totalPaid = Convert.ToDecimal(emiReader["totalPaid"]);
                 emiCount = Convert.ToInt32(emiReader["totalEMICount"]);
+                lateFee = Convert.ToDecimal(emiReader["totalLateFee"]);
             }
             emiReader.Close();
             
@@ -203,6 +204,19 @@ public class MemberController : ControllerBase
                 totalLoanPaid = Convert.ToDecimal(loanReader["totalLoanPaid"]);
                 totalLoanPayable = Convert.ToDecimal(loanReader["totalLoanPayable"]);
             }
+            loanReader.Close();
+            
+            // ✅ FIXED: Interest calculation - kabhi negative nahi hona chahiye
+            decimal totalInterest = 0;
+            if (totalLoans > 0 && totalLoanPayable > totalLoanAmount)
+            {
+                totalInterest = totalLoanPayable - totalLoanAmount;
+            }
+            
+            // ✅ FIXED: Total Payable - agar loan hai to sahi dikhao
+            decimal totalPayable = totalLoanPayable;
+            decimal remainingLoan = totalPayable - totalLoanPaid;
+            if (remainingLoan < 0) remainingLoan = 0;
             
             return Ok(new
             {
@@ -210,11 +224,13 @@ public class MemberController : ControllerBase
                 totalPaid,
                 remainingEMI = totalEMI - totalPaid,
                 emiCount,
+                lateFee,
                 totalLoans,
                 totalLoanAmount,
                 totalLoanPaid,
-                totalLoanPayable,
-                remainingLoan = totalLoanPayable - totalLoanPaid
+                totalLoanPayable = totalPayable,
+                totalInterest,
+                remainingLoan
             });
         }
         catch (Exception ex)
