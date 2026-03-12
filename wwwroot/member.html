@@ -158,6 +158,7 @@
             text-align: center;
             padding: 30px;
             color: #999;
+            font-style: italic;
         }
         .interest-highlight {
             background: #fff3cd;
@@ -198,24 +199,26 @@
             <!-- Loan Summary -->
             <div class="card">
                 <h3>💰 Loan Summary</h3>
-                <div class="stats-container" style="grid-template-columns: repeat(2, 1fr);">
-                    <div class="stat-card">
-                        <div>Total Loan Amount</div>
-                        <h3 id="totalLoanAmount">₹0</h3>
+                <div id="loanSummarySection">
+                    <div class="stats-container" style="grid-template-columns: repeat(2, 1fr);">
+                        <div class="stat-card">
+                            <div>Total Loan Amount</div>
+                            <h3 id="totalLoanAmount">₹0</h3>
+                        </div>
+                        <div class="stat-card">
+                            <div>Active Loans</div>
+                            <h3 id="activeLoans">0</h3>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div>Active Loans</div>
-                        <h3 id="activeLoans">0</h3>
-                    </div>
-                </div>
-                <div class="stats-container" style="grid-template-columns: repeat(2, 1fr); margin-top: 15px;">
-                    <div class="stat-card">
-                        <div>Total Interest</div>
-                        <h3 id="totalInterest">₹0</h3>
-                    </div>
-                    <div class="stat-card">
-                        <div>Total Payable</div>
-                        <h3 id="totalPayable">₹0</h3>
+                    <div class="stats-container" style="grid-template-columns: repeat(2, 1fr); margin-top: 15px;">
+                        <div class="stat-card">
+                            <div>Total Interest</div>
+                            <h3 id="totalInterest">₹0</h3>
+                        </div>
+                        <div class="stat-card">
+                            <div>Total Payable</div>
+                            <h3 id="totalPayable">₹0</h3>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -355,10 +358,13 @@
                 if (res.ok) {
                     let s = await res.json();
                     
-                    // Loan stats
+                    // Loan stats - AGAR LOANS NAHI HAI TO 0 DIKHAO
                     document.getElementById('totalLoanAmount').innerText = '₹' + (s.totalLoanAmount || 0).toLocaleString('en-IN');
                     document.getElementById('activeLoans').innerText = s.totalLoans || 0;
-                    document.getElementById('totalInterest').innerText = '₹' + ((s.totalLoanPayable - s.totalLoanAmount) || 0).toLocaleString('en-IN');
+                    
+                    // Interest tabhi dikhao jab loan ho
+                    let totalInterest = (s.totalLoanPayable - s.totalLoanAmount) || 0;
+                    document.getElementById('totalInterest').innerText = '₹' + totalInterest.toLocaleString('en-IN');
                     document.getElementById('totalPayable').innerText = '₹' + (s.totalLoanPayable || 0).toLocaleString('en-IN');
 
                     // EMI stats
@@ -379,19 +385,22 @@
             } catch (e) { console.error(e); }
         }
 
-        function displayLoans() {
+        function displayLoans(loans) {
             let tbody = document.getElementById('loansBody');
+            
+            // ✅ AGAR LOANS NAHI HAI TO SIRF MESSAGE DIKHAO
             if (!loans || loans.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" class="no-data">No loans found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" class="no-data">📭 No loans taken yet</td></tr>';
                 return;
             }
             
+            // ✅ AGAR LOANS HAI TO HI DIKHAO
             tbody.innerHTML = loans.map(loan => {
                 let interestAmount = loan.totalInterest || (loan.amount * loan.interestRate / 100);
                 let totalPayable = loan.totalPayable || (loan.amount + interestAmount);
                 let paid = loan.paidAmount || 0;
                 let remaining = totalPayable - paid;
-                let statusClass = loan.isClosed ? 'success' : (loan.status === 'Active' ? 'success' : 'warning');
+                let statusClass = loan.isClosed ? 'info' : (loan.status === 'Active' ? 'success' : 'warning');
                 let statusText = loan.isClosed ? 'Closed' : loan.status;
                 
                 return `<tr>
@@ -426,7 +435,7 @@
         function displayMonthlyEMI() {
             let tbody = document.getElementById('monthlyEMIBody');
             if (!monthlyEMI || monthlyEMI.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="no-data">No monthly EMI records found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="no-data">📭 No monthly EMI records found</td></tr>';
                 return;
             }
             
