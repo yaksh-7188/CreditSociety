@@ -233,12 +233,16 @@ public class AuthController : ControllerBase
             }
             
             DateTime endDate = startDate.AddMonths(model.LoanTerm);
+
+            // FIX: TotalInterest aur TotalPayable calculate karke DB mein save karo
+            decimal totalInterest = model.LoanAmount * model.InterestRate / 100;
+            decimal totalPayable = model.LoanAmount + totalInterest;
             
             string query = @"
                 INSERT INTO creditsocietydb_loans 
-                (UserID, LoanAmount, InterestRate, LoanTerm, StartDate, EndDate, Status, PaidAmount, IsClosed) 
+                (UserID, LoanAmount, InterestRate, LoanTerm, StartDate, EndDate, Status, PaidAmount, TotalInterest, TotalPayable, IsClosed) 
                 VALUES 
-                (@UserID, @LoanAmount, @InterestRate, @LoanTerm, @StartDate, @EndDate, 'Active', 0, FALSE)";
+                (@UserID, @LoanAmount, @InterestRate, @LoanTerm, @StartDate, @EndDate, 'Active', 0, @TotalInterest, @TotalPayable, FALSE)";
             
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@UserID", model.UserID);
@@ -247,6 +251,8 @@ public class AuthController : ControllerBase
             cmd.Parameters.AddWithValue("@LoanTerm", model.LoanTerm);
             cmd.Parameters.AddWithValue("@StartDate", startDate.ToString("yyyy-MM-dd"));
             cmd.Parameters.AddWithValue("@EndDate", endDate.ToString("yyyy-MM-dd"));
+            cmd.Parameters.AddWithValue("@TotalInterest", totalInterest);
+            cmd.Parameters.AddWithValue("@TotalPayable", totalPayable);
             
             cmd.ExecuteNonQuery();
             return Ok(new { message = "Loan added successfully" });

@@ -150,7 +150,6 @@ public class MemberController : ControllerBase
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
             
-            // Get EMI stats
             string emiQuery = @"
                 SELECT 
                     COUNT(*) as totalEMICount,
@@ -178,13 +177,15 @@ public class MemberController : ControllerBase
             }
             emiReader.Close();
             
-            // Get loan stats
+            // ✅ FIX: TotalInterest aur ActiveLoans bhi fetch karo
             string loanQuery = @"
                 SELECT 
                     COUNT(*) as totalLoans,
                     COALESCE(SUM(LoanAmount), 0) as totalLoanAmount,
                     COALESCE(SUM(PaidAmount), 0) as totalLoanPaid,
-                    COALESCE(SUM(TotalPayable), 0) as totalLoanPayable
+                    COALESCE(SUM(TotalPayable), 0) as totalLoanPayable,
+                    COALESCE(SUM(TotalInterest), 0) as totalInterestSum,
+                    COUNT(CASE WHEN Status = 'Active' THEN 1 END) as activeLoans
                 FROM creditsocietydb_loans 
                 WHERE UserID = @UserId";
             
@@ -196,26 +197,24 @@ public class MemberController : ControllerBase
             decimal totalLoanAmount = 0;
             decimal totalLoanPaid = 0;
             decimal totalLoanPayable = 0;
-            
+            decimal totalInterestSum = 0;
+            int activeLoans = 0;
+
             if (loanReader.Read())
             {
                 totalLoans = Convert.ToInt32(loanReader["totalLoans"]);
                 totalLoanAmount = Convert.ToDecimal(loanReader["totalLoanAmount"]);
                 totalLoanPaid = Convert.ToDecimal(loanReader["totalLoanPaid"]);
                 totalLoanPayable = Convert.ToDecimal(loanReader["totalLoanPayable"]);
+                totalInterestSum = Convert.ToDecimal(loanReader["totalInterestSum"]);
+                activeLoans = Convert.ToInt32(loanReader["activeLoans"]);
             }
             loanReader.Close();
             
-            // ✅ FIXED: Interest calculation - kabhi negative nahi hona chahiye
-            decimal totalInterest = 0;
-            if (totalLoans > 0 && totalLoanPayable > totalLoanAmount)
-            {
-                totalInterest = totalLoanPayable - totalLoanAmount;
-            }
+            // ✅ FIX: DB se directly interest lo - kabhi negative nahi hoga
+            decimal totalInterest = totalInterestSum > 0 ? totalInterestSum : 0;
             
-            // ✅ FIXED: Total Payable - agar loan hai to sahi dikhao
-            decimal totalPayable = totalLoanPayable;
-            decimal remainingLoan = totalPayable - totalLoanPaid;
+            decimal remainingLoan = totalLoanPayable - totalLoanPaid;
             if (remainingLoan < 0) remainingLoan = 0;
             
             return Ok(new
@@ -226,9 +225,10 @@ public class MemberController : ControllerBase
                 emiCount,
                 lateFee,
                 totalLoans,
+                activeLoans,
                 totalLoanAmount,
                 totalLoanPaid,
-                totalLoanPayable = totalPayable,
+                totalLoanPayable,
                 totalInterest,
                 remainingLoan
             });

@@ -5,168 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Member Dashboard - Credit Society</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            display: flex;
-            min-height: 100vh;
-            background: #f4f7fc;
-        }
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 0;
-        }
-        .sidebar-header {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .sidebar-menu {
-            list-style: none;
-            padding: 20px 0;
-        }
-        .sidebar-menu li {
-            padding: 15px 25px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .sidebar-menu li:hover,
-        .sidebar-menu li.active {
-            background: rgba(255,255,255,0.1);
-            border-left: 4px solid white;
-        }
-        .main-content {
-            flex: 1;
-            padding: 30px;
-        }
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        .stat-card h3 {
-            color: #667eea;
-            font-size: 2rem;
-            margin: 10px 0;
-        }
-        .profile-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-        .profile-pic {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 40px;
-            font-weight: bold;
-        }
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        .card h3 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background: #f8f9fa;
-        }
-        .badge-success {
-            background: #d4edda;
-            color: #155724;
-            padding: 5px 10px;
-            border-radius: 20px;
-        }
-        .badge-warning {
-            background: #fff3cd;
-            color: #856404;
-            padding: 5px 10px;
-            border-radius: 20px;
-        }
-        .badge-danger {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 5px 10px;
-            border-radius: 20px;
-        }
-        .badge-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            padding: 5px 10px;
-            border-radius: 20px;
-        }
-        .btn {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s;
-        }
-        .btn-info {
-            background: #3498db;
-            color: white;
-        }
-        .btn-info:hover {
-            background: #2980b9;
-        }
-        .loading {
-            text-align: center;
-            padding: 50px;
-            color: #666;
-        }
-        .no-data {
-            text-align: center;
-            padding: 30px;
-            color: #999;
-            font-style: italic;
-        }
-        .interest-highlight {
-            background: #fff3cd;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
-            border-left: 4px solid #f39c12;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; min-height: 100vh; background: #f4f7fc; }
+        .sidebar { width: 280px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 0; }
+        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-menu { list-style: none; padding: 20px 0; }
+        .sidebar-menu li { padding: 15px 25px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 10px; }
+        .sidebar-menu li:hover, .sidebar-menu li.active { background: rgba(255,255,255,0.1); border-left: 4px solid white; }
+        .main-content { flex: 1; padding: 30px; }
+        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .stat-card h3 { color: #667eea; font-size: 2rem; margin: 10px 0; }
+        .profile-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 30px; display: flex; align-items: center; gap: 30px; }
+        .profile-pic { width: 100px; height: 100px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; font-weight: bold; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .card h3 { margin-bottom: 20px; color: #333; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; }
+        .badge-success { background: #d4edda; color: #155724; padding: 5px 10px; border-radius: 20px; }
+        .badge-warning { background: #fff3cd; color: #856404; padding: 5px 10px; border-radius: 20px; }
+        .badge-danger { background: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 20px; }
+        .badge-info { background: #d1ecf1; color: #0c5460; padding: 5px 10px; border-radius: 20px; }
+        .btn { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+        .btn-info { background: #3498db; color: white; }
+        .btn-info:hover { background: #2980b9; }
+        .no-data { text-align: center; padding: 30px; color: #999; font-style: italic; }
+        .interest-highlight { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 10px 0 20px 0; border-left: 4px solid #f39c12; }
     </style>
 </head>
 <body>
@@ -176,16 +41,16 @@
             <p id="memberName">Member</p>
         </div>
         <ul class="sidebar-menu">
-            <li class="active" onclick="showSection('dashboard')">📊 Dashboard</li>
-            <li onclick="showSection('monthly-emi')">📆 Monthly EMI</li>
-            <li onclick="showSection('my-loans')">💰 My Loans</li>
-            <li onclick="showSection('profile')">👤 Profile</li>
+            <li class="active" onclick="showSection('dashboard', this)">📊 Dashboard</li>
+            <li onclick="showSection('monthly-emi', this)">📆 Monthly EMI</li>
+            <li onclick="showSection('my-loans', this)">💰 My Loans</li>
+            <li onclick="showSection('profile', this)">👤 Profile</li>
             <li onclick="logout()">🚪 Logout</li>
         </ul>
     </div>
 
     <div class="main-content">
-        <!-- Dashboard Section -->
+        <!-- Dashboard -->
         <div id="dashboard-section">
             <div class="profile-card">
                 <div class="profile-pic" id="profilePic">👤</div>
@@ -195,112 +60,55 @@
                     <p id="memberPhone">Loading...</p>
                 </div>
             </div>
-
-            <!-- Loan Summary -->
             <div class="card">
                 <h3>💰 Loan Summary</h3>
-                <div id="loanSummarySection">
-                    <div class="stats-container" style="grid-template-columns: repeat(2, 1fr);">
-                        <div class="stat-card">
-                            <div>Total Loan Amount</div>
-                            <h3 id="totalLoanAmount">₹0</h3>
-                        </div>
-                        <div class="stat-card">
-                            <div>Active Loans</div>
-                            <h3 id="activeLoans">0</h3>
-                        </div>
-                    </div>
-                    <div class="stats-container" style="grid-template-columns: repeat(2, 1fr); margin-top: 15px;">
-                        <div class="stat-card">
-                            <div>Total Interest</div>
-                            <h3 id="totalInterest">₹0</h3>
-                        </div>
-                        <div class="stat-card">
-                            <div>Total Payable</div>
-                            <h3 id="totalPayable">₹0</h3>
-                        </div>
-                    </div>
+                <div class="stats-container" style="grid-template-columns: repeat(2, 1fr);">
+                    <div class="stat-card"><div>Total Loan Amount</div><h3 id="totalLoanAmount">₹0</h3></div>
+                    <div class="stat-card"><div>Active Loans</div><h3 id="activeLoans">0</h3></div>
+                </div>
+                <div class="stats-container" style="grid-template-columns: repeat(2, 1fr); margin-top: 15px;">
+                    <div class="stat-card"><div>Total Interest</div><h3 id="totalInterest">₹0</h3></div>
+                    <div class="stat-card"><div>Total Payable</div><h3 id="totalPayable">₹0</h3></div>
                 </div>
             </div>
-
-            <!-- Monthly EMI Summary -->
             <div class="card">
                 <h3>📆 Monthly Collection Summary</h3>
                 <div class="stats-container" style="grid-template-columns: repeat(3, 1fr);">
-                    <div class="stat-card">
-                        <div>Total Monthly EMI</div>
-                        <h3 id="totalMonthlyEMI">₹0</h3>
-                    </div>
-                    <div class="stat-card">
-                        <div>Paid</div>
-                        <h3 id="paidMonthlyEMI">₹0</h3>
-                    </div>
-                    <div class="stat-card">
-                        <div>Pending</div>
-                        <h3 id="pendingMonthlyEMI">₹0</h3>
-                    </div>
+                    <div class="stat-card"><div>Total Monthly EMI</div><h3 id="totalMonthlyEMI">₹0</h3></div>
+                    <div class="stat-card"><div>Paid</div><h3 id="paidMonthlyEMI">₹0</h3></div>
+                    <div class="stat-card"><div>Pending</div><h3 id="pendingMonthlyEMI">₹0</h3></div>
                 </div>
             </div>
         </div>
 
-        <!-- Monthly EMI Section -->
-        <div id="monthly-emi-section" style="display: none;">
+        <!-- Monthly EMI -->
+        <div id="monthly-emi-section" style="display:none;">
             <div class="card">
                 <h3>📆 Monthly EMI Collection History</h3>
-                <table id="monthlyEMITable">
-                    <thead>
-                        <tr>
-                            <th>Month</th>
-                            <th>Amount</th>
-                            <th>Paid</th>
-                            <th>Payment Date</th>
-                            <th>Mode</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="monthlyEMIBody">
-                        <tr><td colspan="7" class="loading">Loading...</td></tr>
-                    </tbody>
+                <table>
+                    <thead><tr><th>Month</th><th>Amount</th><th>Paid</th><th>Payment Date</th><th>Mode</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="monthlyEMIBody"><tr><td colspan="7" class="no-data">Loading...</td></tr></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- My Loans Section -->
-        <div id="my-loans-section" style="display: none;">
+        <!-- My Loans -->
+        <div id="my-loans-section" style="display:none;">
             <div class="card">
                 <h3>💰 My Loans</h3>
-                
-                <!-- Interest Info Card -->
                 <div class="interest-highlight">
                     <strong>ℹ️ How Interest Works:</strong> Interest is calculated as (Principal × Interest Rate ÷ 100)<br>
                     Example: ₹50,000 @ 8.5% = ₹4,250 interest, Total Payable = ₹54,250
                 </div>
-                
-                <table id="loansTable">
-                    <thead>
-                        <tr>
-                            <th>Loan ID</th>
-                            <th>Principal</th>
-                            <th>Interest %</th>
-                            <th>Interest Amt</th>
-                            <th>Total Payable</th>
-                            <th>Paid</th>
-                            <th>Remaining</th>
-                            <th>Start</th>
-                            <th>Status</th>
-                            <th>Receipt</th>
-                        </tr>
-                    </thead>
-                    <tbody id="loansBody">
-                        <tr><td colspan="10" class="loading">Loading...</td></tr>
-                    </tbody>
+                <table>
+                    <thead><tr><th>Loan ID</th><th>Principal</th><th>Interest %</th><th>Interest Amt</th><th>Total Payable</th><th>Paid</th><th>Remaining</th><th>Start</th><th>Status</th><th>Receipt</th></tr></thead>
+                    <tbody id="loansBody"><tr><td colspan="10" class="no-data">Loading...</td></tr></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Profile Section -->
-        <div id="profile-section" style="display: none;">
+        <!-- Profile -->
+        <div id="profile-section" style="display:none;">
             <div class="card">
                 <h3>👤 Profile Information</h3>
                 <table>
@@ -317,10 +125,8 @@
     <script>
         let memberId = null;
         let memberData = {};
-        let monthlyEMI = [];
-        let loans = [];
 
-        window.onload = function() {
+        window.onload = function () {
             let user = JSON.parse(localStorage.getItem('user') || '{}');
             if (user && user.userId) {
                 memberId = user.userId;
@@ -330,10 +136,6 @@
                 window.location.href = '/Login.html';
             }
         };
-
-        function downloadReceipt(type, id) {
-            window.open(`/api/Receipt/${type}/${id}`, '_blank');
-        }
 
         async function loadAllData() {
             await loadMemberDetails();
@@ -345,10 +147,7 @@
         async function loadMemberDetails() {
             try {
                 let res = await fetch(`/api/Member/member/${memberId}`);
-                if (res.ok) {
-                    memberData = await res.json();
-                    updateProfile();
-                }
+                if (res.ok) { memberData = await res.json(); updateProfile(); }
             } catch (e) { console.error(e); }
         }
 
@@ -357,17 +156,16 @@
                 let res = await fetch(`/api/Member/member/${memberId}/stats`);
                 if (res.ok) {
                     let s = await res.json();
-                    
-                    // Loan stats - AGAR LOANS NAHI HAI TO 0 DIKHAO
+
                     document.getElementById('totalLoanAmount').innerText = '₹' + (s.totalLoanAmount || 0).toLocaleString('en-IN');
-                    document.getElementById('activeLoans').innerText = s.totalLoans || 0;
-                    
-                    // Interest tabhi dikhao jab loan ho
-                    let totalInterest = (s.totalLoanPayable - s.totalLoanAmount) || 0;
-                    document.getElementById('totalInterest').innerText = '₹' + totalInterest.toLocaleString('en-IN');
+                    // ✅ FIX: activeLoans use karo - sirf active loans count dikhao
+                    document.getElementById('activeLoans').innerText = s.activeLoans || 0;
+
+                    // ✅ FIX: Server se aaya totalInterest use karo - negative nahi hoga
+                    let interest = s.totalInterest || 0;
+                    document.getElementById('totalInterest').innerText = '₹' + interest.toLocaleString('en-IN');
                     document.getElementById('totalPayable').innerText = '₹' + (s.totalLoanPayable || 0).toLocaleString('en-IN');
 
-                    // EMI stats
                     document.getElementById('totalMonthlyEMI').innerText = '₹' + (s.totalEMI || 0).toLocaleString('en-IN');
                     document.getElementById('paidMonthlyEMI').innerText = '₹' + (s.totalPaid || 0).toLocaleString('en-IN');
                     document.getElementById('pendingMonthlyEMI').innerText = '₹' + (s.remainingEMI || 0).toLocaleString('en-IN');
@@ -379,113 +177,92 @@
             try {
                 let res = await fetch(`/api/Member/member/${memberId}/loans`);
                 if (res.ok) {
-                    loans = await res.json();
-                    displayLoans();
+                    let loans = await res.json();
+                    // ✅ FIX: loans variable pass karo displayLoans ko
+                    displayLoans(loans);
                 }
             } catch (e) { console.error(e); }
         }
 
         function displayLoans(loans) {
-    let tbody = document.getElementById('loansBody');
-    
-    if (!loans || loans.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" class="no-data">📭 No loans taken yet</td></tr>';
-        return;
-    }
-    
-    tbody.innerHTML = loans.map(loan => {
-        // ✅ Interest calculation
-        let interestAmount = (loan.amount * loan.interestRate / 100);
-        let totalPayable = loan.amount + interestAmount;
-        let paid = loan.paidAmount || 0;
-        let remaining = totalPayable - paid;
-        
-        return `<tr>
-            <td>${loan.loanId}</td>
-            <td>₹${loan.amount}</td>
-            <td>${loan.interestRate}%</td>
-            <td>₹${interestAmount.toFixed(2)}</td>
-            <td>₹${totalPayable.toFixed(2)}</td>
-            <td>₹${paid}</td>
-            <td>₹${remaining.toFixed(2)}</td>
-            <td>${loan.startDate || '-'}</td>
-            <td><span class="badge-${loan.status === 'Active' ? 'success' : 'info'}">${loan.status}</span></td>
-            <td>
-                ${loan.status === 'Closed' ? 
-                    `<button class="btn btn-info" onclick="downloadReceipt('loan', ${loan.loanId})">📥 Receipt</button>` : 
-                    '-'}
-            </td>
-        </tr>`;
-    }).join('');
-}
+            let tbody = document.getElementById('loansBody');
+            if (!loans || loans.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" class="no-data">📭 No loans taken yet</td></tr>';
+                return;
+            }
+            tbody.innerHTML = loans.map(loan => {
+                let interestAmount = (loan.amount * loan.interestRate / 100);
+                let totalPayable = loan.amount + interestAmount;
+                let paid = loan.paidAmount || 0;
+                let remaining = totalPayable - paid;
+                return `<tr>
+                    <td>${loan.loanId}</td>
+                    <td>₹${loan.amount}</td>
+                    <td>${loan.interestRate}%</td>
+                    <td>₹${interestAmount.toFixed(2)}</td>
+                    <td>₹${totalPayable.toFixed(2)}</td>
+                    <td>₹${paid}</td>
+                    <td>₹${remaining.toFixed(2)}</td>
+                    <td>${loan.startDate || '-'}</td>
+                    <td><span class="badge-${loan.status === 'Active' ? 'success' : 'info'}">${loan.status}</span></td>
+                    <td>${loan.status === 'Closed' ? `<button class="btn btn-info" onclick="downloadReceipt('loan', ${loan.loanId})">📥 Receipt</button>` : '-'}</td>
+                </tr>`;
+            }).join('');
+        }
 
         async function loadMonthlyEMI() {
             try {
                 let res = await fetch(`/api/Member/member/${memberId}/emi`);
                 if (res.ok) {
-                    monthlyEMI = await res.json();
-                    displayMonthlyEMI();
+                    let emiList = await res.json();
+                    let tbody = document.getElementById('monthlyEMIBody');
+                    if (!emiList || emiList.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" class="no-data">📭 No monthly EMI records found</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = emiList.map(emi => {
+                        let statusClass = emi.status === 'Paid' ? 'success' : emi.status === 'Late' ? 'danger' : 'warning';
+                        return `<tr>
+                            <td>${emi.monthYear}</td>
+                            <td>₹${emi.amount || 1000}</td>
+                            <td>₹${emi.paidAmount || 0}</td>
+                            <td>${emi.paymentDate || '-'}</td>
+                            <td>${emi.paymentMode || '-'}</td>
+                            <td><span class="badge-${statusClass}">${emi.status || 'Pending'}</span></td>
+                            <td><button class="btn btn-info" onclick="downloadReceipt('emi', ${emi.id})">📥 Receipt</button></td>
+                        </tr>`;
+                    }).join('');
                 }
             } catch (e) { console.error(e); }
-        }
-
-        function displayMonthlyEMI() {
-            let tbody = document.getElementById('monthlyEMIBody');
-            if (!monthlyEMI || monthlyEMI.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="no-data">📭 No monthly EMI records found</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = monthlyEMI.map(emi => {
-                let statusClass = emi.status === 'Paid' ? 'success' : 
-                                 emi.status === 'Late' ? 'danger' : 'warning';
-                return `<tr>
-                    <td>${emi.monthYear}</td>
-                    <td>₹1000</td>
-                    <td>₹${emi.paidAmount || 0}</td>
-                    <td>${emi.paymentDate || '-'}</td>
-                    <td>${emi.paymentMode || '-'}</td>
-                    <td><span class="badge-${statusClass}">${emi.status || 'Pending'}</span></td>
-                    <td>
-                        <button class="btn btn-info" onclick="downloadReceipt('emi', ${emi.id})">📥 Receipt</button>
-                    </td>
-                </tr>`;
-            }).join('');
         }
 
         function updateProfile() {
             document.getElementById('welcomeName').innerText = memberData.fullName || 'Member';
             document.getElementById('memberEmail').innerText = memberData.email || '';
             document.getElementById('memberPhone').innerText = memberData.phone || '';
-            
             document.getElementById('profileFullName').innerText = memberData.fullName || '';
             document.getElementById('profileUsername').innerText = memberData.username || '';
             document.getElementById('profileEmail').innerText = memberData.email || '';
             document.getElementById('profilePhone').innerText = memberData.phone || '';
-            
             if (memberData.joinDate) {
                 let date = new Date(memberData.joinDate);
-                document.getElementById('profileJoinDate').innerText = date.toLocaleDateString('en-IN', {
-                    year: 'numeric', month: 'long', day: 'numeric'
-                });
+                document.getElementById('profileJoinDate').innerText = date.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
             }
-            
             let initials = (memberData.fullName || 'M').split(' ').map(n => n[0]).join('').toUpperCase();
             document.getElementById('profilePic').innerText = initials || '👤';
         }
 
-        function showSection(section) {
-            let sections = ['dashboard', 'monthly-emi', 'my-loans', 'profile'];
-            sections.forEach(s => {
+        function showSection(section, el) {
+            ['dashboard', 'monthly-emi', 'my-loans', 'profile'].forEach(s => {
                 document.getElementById(s + '-section').style.display = 'none';
             });
             document.getElementById(section + '-section').style.display = 'block';
-            
             document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            
-            if (section === 'monthly-emi') loadMonthlyEMI();
-            if (section === 'my-loans') loadLoans();
+            el.classList.add('active');
+        }
+
+        function downloadReceipt(type, id) {
+            window.open(`/api/Receipt/${type}/${id}`, '_blank');
         }
 
         function logout() {
