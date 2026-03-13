@@ -4,296 +4,234 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Credit Society - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --ink: #0a0a0f;
+            --surface: #13131c;
+            --glass: rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.08);
+            --accent: #7c6dfa;
+            --accent2: #a78bfa;
+            --accent-glow: rgba(124,109,250,0.35);
+            --green: #34d399;
+            --red: #f87171;
+            --text: #f0eeff;
+            --text2: rgba(240,238,255,0.55);
+            --text3: rgba(240,238,255,0.28);
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'DM Sans', sans-serif;
+            background: var(--ink);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
-        .login-container {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            width: 420px;
-            max-width: 95%;
+        .bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+        .bg-orb { position: absolute; border-radius: 50%; filter: blur(90px); }
+        .bg-orb-1 { width: 550px; height: 550px; background: radial-gradient(circle, rgba(76,63,214,0.5) 0%, transparent 70%); top: -140px; left: -100px; animation: drift1 14s ease-in-out infinite; }
+        .bg-orb-2 { width: 450px; height: 450px; background: radial-gradient(circle, rgba(124,58,237,0.45) 0%, transparent 70%); bottom: -100px; right: -80px; animation: drift2 17s ease-in-out infinite; }
+        .bg-orb-3 { width: 280px; height: 280px; background: radial-gradient(circle, rgba(29,78,216,0.4) 0%, transparent 70%); top: 45%; left: 60%; animation: drift3 11s ease-in-out infinite; }
+        .bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 52px 52px; mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent); }
+        @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(50px,35px) scale(1.12)} }
+        @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-35px,-45px) scale(1.08)} }
+        @keyframes drift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-30px,25px)} }
+
+        .card-wrap {
+            position: relative; z-index: 10;
+            width: 100%; max-width: 420px; padding: 16px;
+            animation: fadeUp 0.65s cubic-bezier(0.16,1,0.3,1) both;
         }
-        .logo {
-            text-align: center;
-            margin-bottom: 28px;
+        @keyframes fadeUp { from{opacity:0;transform:translateY(32px)} to{opacity:1;transform:translateY(0)} }
+
+        .card {
+            background: linear-gradient(160deg, rgba(22,22,34,0.97) 0%, rgba(12,12,20,0.99) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 26px;
+            padding: 38px 34px;
+            backdrop-filter: blur(30px);
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.04) inset, 0 40px 90px rgba(0,0,0,0.7), 0 0 80px var(--accent-glow);
         }
-        .logo h2 {
-            color: #667eea;
-            font-size: 30px;
-            font-weight: 700;
-        }
-        .logo p {
-            color: #888;
-            font-size: 13px;
-            margin-top: 4px;
-        }
-        .role-selector {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-bottom: 28px;
-        }
-        .role-option {
-            flex: 1;
-            max-width: 160px;
-        }
-        .role-option input[type="radio"] {
-            display: none;
-        }
+
+        /* LOGO */
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo-mark { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 66px; height: 66px; margin-bottom: 16px; }
+        .logo-mark-bg { position: absolute; inset: 0; background: linear-gradient(135deg, #4c3fd6, #7c3aed); border-radius: 20px; box-shadow: 0 8px 36px rgba(124,109,250,0.55); }
+        .logo-mark-ring { position: absolute; inset: -6px; border-radius: 25px; border: 1px solid rgba(124,109,250,0.3); animation: ringPulse 3s ease-in-out infinite; }
+        .logo-mark-ring2 { position: absolute; inset: -12px; border-radius: 30px; border: 1px solid rgba(124,109,250,0.12); animation: ringPulse 3s ease-in-out infinite 0.5s; }
+        @keyframes ringPulse { 0%,100%{opacity:0.3;transform:scale(1)} 50%{opacity:0.8;transform:scale(1.04)} }
+        .logo-mark-icon { position: relative; z-index: 1; font-size: 30px; }
+        .logo h2 { font-family: 'Syne', sans-serif; font-size: 21px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+        .logo p { font-size: 12px; color: var(--text3); margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
+
+        /* ROLE */
+        .role-wrap { margin-bottom: 22px; }
+        .role-label { font-size: 10.5px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+        .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .role-option input[type="radio"] { display: none; }
         .role-option label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            padding: 10px 16px;
-            border-radius: 10px;
-            border: 2px solid #e0e0e0;
-            transition: all 0.3s;
-            font-weight: 500;
-            color: #666;
-            width: 100%;
-            user-select: none;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 11px 12px; border-radius: 13px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass);
+            color: var(--text2); font-size: 13.5px; font-weight: 500;
+            cursor: pointer; transition: all 0.22s ease; user-select: none;
         }
-        .role-option input[type="radio"]:checked + label {
-            border-color: #667eea;
-            background: #f0f1ff;
-            color: #667eea;
-        }
-        .role-option label:hover {
-            border-color: #667eea;
-            background: #f9f9ff;
-        }
-        .form-group {
-            margin-bottom: 18px;
-            position: relative;
-        }
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #444;
-            margin-bottom: 6px;
-        }
-        .form-group label span.required {
-            color: #e74c3c;
-            margin-left: 2px;
-        }
-        .input-wrapper {
-            position: relative;
-        }
+        .role-option label:hover { border-color: rgba(124,109,250,0.4); background: rgba(124,109,250,0.08); color: var(--text); }
+        .role-option input:checked + label { border-color: var(--accent); background: rgba(124,109,250,0.14); color: var(--accent2); font-weight: 600; box-shadow: 0 0 24px rgba(124,109,250,0.18); }
+
+        /* ALERT */
+        .alert-box { padding: 11px 14px; border-radius: 11px; font-size: 13px; margin-bottom: 16px; text-align: center; display: none; font-weight: 500; }
+        .alert-box.error { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.22); color: var(--red); }
+        .alert-box.success { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.22); color: var(--green); }
+        .alert-box.visible { display: block; }
+
+        /* FORM */
+        .form-group { margin-bottom: 15px; }
+        .form-group > label { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .form-group > label .required { color: var(--accent); }
+        .input-wrapper { position: relative; }
         .input-wrapper input {
-            width: 100%;
-            padding: 12px 42px 12px 14px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 15px;
-            transition: all 0.3s;
-            color: #333;
+            width: 100%; padding: 13px 44px 13px 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 13px;
+            font-size: 14.5px; font-family: 'DM Sans', sans-serif;
+            color: var(--text); transition: all 0.22s ease;
         }
-        .input-wrapper input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
-        }
-        .input-wrapper input.error-field {
-            border-color: #e74c3c;
-        }
-        .input-wrapper input.error-field:focus {
-            box-shadow: 0 0 0 3px rgba(231,76,60,0.15);
-        }
-        .toggle-password {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            font-size: 18px;
-            color: #aaa;
-            user-select: none;
-            transition: color 0.2s;
-        }
-        .toggle-password:hover {
-            color: #667eea;
-        }
-        .field-error {
-            color: #e74c3c;
-            font-size: 12px;
-            margin-top: 5px;
-            display: none;
-        }
-        .field-error.visible {
-            display: block;
-        }
+        .input-wrapper input::placeholder { color: var(--text3); }
+        .input-wrapper input:focus { outline: none; border-color: var(--accent); background: rgba(124,109,250,0.07); box-shadow: 0 0 0 3px rgba(124,109,250,0.14); }
+        .input-wrapper input.error-field { border-color: rgba(248,113,113,0.5); }
+        .input-wrapper input.error-field:focus { box-shadow: 0 0 0 3px rgba(248,113,113,0.14); }
+        .toggle-password { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 16px; color: var(--text3); user-select: none; transition: color 0.2s; }
+        .toggle-password:hover { color: var(--accent2); }
+        .field-error { font-size: 11.5px; color: var(--red); margin-top: 5px; display: none; font-weight: 500; }
+        .field-error.visible { display: block; }
+
+        /* BUTTON */
         .login-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 17px;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 8px 0 16px 0;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            min-height: 50px;
+            width: 100%; margin-top: 22px; padding: 14px;
+            position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #5b52f0 0%, #7c3aed 100%);
+            color: white; border: none; border-radius: 14px;
+            font-size: 15px; font-weight: 700;
+            font-family: 'Syne', sans-serif; letter-spacing: 0.3px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            gap: 10px; min-height: 50px; transition: all 0.25s ease;
+            box-shadow: 0 4px 28px rgba(124,109,250,0.45), 0 0 0 1px rgba(255,255,255,0.1) inset;
         }
-        .login-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102,126,234,0.4);
-        }
-        .login-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            display: none;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .alert-box {
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            margin-bottom: 12px;
-            text-align: center;
-            display: none;
-        }
-        .alert-box.error {
-            background: #fff2f2;
-            border: 1px solid #f5c6cb;
-            color: #c0392b;
-        }
-        .alert-box.success {
-            background: #f0fff4;
-            border: 1px solid #c3e6cb;
-            color: #27ae60;
-        }
-        .alert-box.visible {
-            display: block;
-        }
-        .footer {
-            text-align: center;
-            color: #bbb;
-            font-size: 12px;
-            margin-top: 10px;
-        }
+        .login-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 55%); opacity: 0; transition: opacity 0.25s; }
+        .login-btn:hover:not(:disabled)::before { opacity: 1; }
+        .login-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(124,109,250,0.6), 0 0 0 1px rgba(255,255,255,0.12) inset; }
+        .login-btn:active:not(:disabled) { transform: translateY(0); }
+        .login-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+        .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* FOOTER */
+        .footer-divider { display: flex; align-items: center; gap: 12px; margin-top: 24px; }
+        .footer-line { flex: 1; height: 1px; background: var(--glass-border); }
+        .footer-text { font-size: 11px; color: var(--text3); white-space: nowrap; }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="logo">
-            <h2>🏦 Credit Society</h2>
-            <p>Management System — Secure Login</p>
-        </div>
+    <div class="bg">
+        <div class="bg-grid"></div>
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
+    </div>
 
-        <div class="role-selector">
-            <div class="role-option">
-                <input type="radio" id="roleAdmin" name="role" value="Admin" checked>
-                <label for="roleAdmin">👑 Admin</label>
+    <div class="card-wrap">
+        <div class="card">
+            <div class="logo">
+                <div class="logo-mark">
+                    <div class="logo-mark-bg"></div>
+                    <div class="logo-mark-ring"></div>
+                    <div class="logo-mark-ring2"></div>
+                    <span class="logo-mark-icon">🏦</span>
+                </div>
+                <h2>Credit Society</h2>
+                <p>Management System</p>
             </div>
-            <div class="role-option">
-                <input type="radio" id="roleMember" name="role" value="Member">
-                <label for="roleMember">👤 Member</label>
+
+            <div class="role-wrap">
+                <div class="role-label">Login as</div>
+                <div class="role-selector">
+                    <div class="role-option">
+                        <input type="radio" id="roleAdmin" name="role" value="Admin" checked>
+                        <label for="roleAdmin">👑 Admin</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="radio" id="roleMember" name="role" value="Member">
+                        <label for="roleMember">👤 Member</label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="alertBox" class="alert-box error"></div>
+
+            <div class="form-group">
+                <label for="username">Username <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <input type="text" id="username" placeholder="Enter your username"
+                        autocomplete="username" maxlength="50"
+                        oninput="clearFieldError('username')">
+                </div>
+                <div class="field-error" id="usernameError">Username is required.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" placeholder="Enter your password"
+                        autocomplete="current-password" maxlength="100"
+                        oninput="clearFieldError('password')"
+                        onkeydown="handleEnter(event)">
+                    <span class="toggle-password" onclick="togglePassword()" id="eyeIcon">👁️</span>
+                </div>
+                <div class="field-error" id="passwordError">Password is required.</div>
+            </div>
+
+            <button class="login-btn" id="loginBtn" onclick="login()">
+                <span class="spinner" id="spinner"></span>
+                <span id="btnText">Sign In</span>
+            </button>
+
+            <div class="footer-divider">
+                <div class="footer-line"></div>
+                <div class="footer-text">© 2026 Credit Society</div>
+                <div class="footer-line"></div>
             </div>
         </div>
-
-        <div id="alertBox" class="alert-box error"></div>
-
-        <div class="form-group">
-            <label for="username">Username <span class="required">*</span></label>
-            <div class="input-wrapper">
-                <input type="text" id="username" placeholder="Enter your username"
-                    autocomplete="username" maxlength="50"
-                    oninput="clearFieldError('username')">
-            </div>
-            <div class="field-error" id="usernameError">Username is required.</div>
-        </div>
-
-        <div class="form-group">
-            <label for="password">Password <span class="required">*</span></label>
-            <div class="input-wrapper">
-                <input type="password" id="password" placeholder="Enter your password"
-                    autocomplete="current-password" maxlength="100"
-                    oninput="clearFieldError('password')"
-                    onkeydown="handleEnter(event)">
-                <span class="toggle-password" onclick="togglePassword()" id="eyeIcon" title="Show/Hide Password">👁️</span>
-            </div>
-            <div class="field-error" id="passwordError">Password is required.</div>
-        </div>
-
-        <button class="login-btn" id="loginBtn" onclick="login()">
-            <span class="spinner" id="spinner"></span>
-            <span id="btnText">Login</span>
-        </button>
-
-        <div class="footer">© 2026 Credit Society Management System</div>
     </div>
 
     <script>
         function togglePassword() {
             const input = document.getElementById('password');
             const icon  = document.getElementById('eyeIcon');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.textContent = '🙈';
-            } else {
-                input.type = 'password';
-                icon.textContent = '👁️';
-            }
+            if (input.type === 'password') { input.type = 'text'; icon.textContent = '🙈'; }
+            else { input.type = 'password'; icon.textContent = '👁️'; }
         }
-
-        function handleEnter(e) {
-            if (e.key === 'Enter') login();
-        }
-
+        function handleEnter(e) { if (e.key === 'Enter') login(); }
         function clearFieldError(fieldId) {
             document.getElementById(fieldId).classList.remove('error-field');
             document.getElementById(fieldId + 'Error').classList.remove('visible');
             hideAlert();
         }
-
         function showAlert(msg, type = 'error') {
             const box = document.getElementById('alertBox');
             box.textContent = msg;
             box.className = 'alert-box ' + type + ' visible';
         }
-
-        function hideAlert() {
-            document.getElementById('alertBox').classList.remove('visible');
-        }
-
+        function hideAlert() { document.getElementById('alertBox').classList.remove('visible'); }
         function validate() {
             let valid = true;
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
-
             if (!username) {
                 document.getElementById('username').classList.add('error-field');
                 document.getElementById('usernameError').textContent = 'Username is required.';
@@ -305,7 +243,6 @@
                 document.getElementById('usernameError').classList.add('visible');
                 valid = false;
             }
-
             if (!password) {
                 document.getElementById('password').classList.add('error-field');
                 document.getElementById('passwordError').textContent = 'Password is required.';
@@ -317,48 +254,37 @@
                 document.getElementById('passwordError').classList.add('visible');
                 valid = false;
             }
-
             return valid;
         }
-
         function setLoading(isLoading) {
-            const btn     = document.getElementById('loginBtn');
+            const btn = document.getElementById('loginBtn');
             const spinner = document.getElementById('spinner');
             const btnText = document.getElementById('btnText');
             btn.disabled = isLoading;
             spinner.style.display = isLoading ? 'block' : 'none';
-            btnText.textContent = isLoading ? 'Logging in...' : 'Login';
+            btnText.textContent = isLoading ? 'Signing in...' : 'Sign In';
         }
-
         async function login() {
             hideAlert();
             if (!validate()) return;
-
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
-            const role     = document.querySelector('input[name="role"]:checked').value;
-
+            const role = document.querySelector('input[name="role"]:checked').value;
             setLoading(true);
-
             try {
                 const response = await fetch('/api/Auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
-
                 const data = await response.json();
-
                 if (response.ok) {
                     if (data.role === role) {
                         localStorage.setItem('user', JSON.stringify(data));
                         showAlert('✅ Login successful! Redirecting...', 'success');
-                        setTimeout(() => {
-                            window.location.href = role === 'Admin' ? '/admin.html' : '/member.html';
-                        }, 800);
+                        setTimeout(() => { window.location.href = role === 'Admin' ? '/admin.html' : '/member.html'; }, 800);
                     } else {
-                        const correctRole = data.role;
-                        showAlert('❌ You are registered as "' + correctRole + '". Please select "' + correctRole + '" role.');
+                        showAlert('❌ You are registered as "' + data.role + '". Please select "' + data.role + '" role.');
                         setLoading(false);
                     }
                 } else if (response.status === 401) {
@@ -374,10 +300,7 @@
                 setLoading(false);
             }
         }
-
-        window.onload = function () {
-            document.getElementById('username').focus();
-        };
+        window.onload = function () { document.getElementById('username').focus(); };
     </script>
 </body>
 </html>

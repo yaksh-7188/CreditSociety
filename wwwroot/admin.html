@@ -4,343 +4,606 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Credit Society</title>
-    <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --ink: #0c0c14;
+            --ink2: #10101a;
+            --card: #15151f;
+            --card2: #1c1c28;
+            --border: rgba(255,255,255,0.07);
+            --border2: rgba(255,255,255,0.04);
+            --accent: #7c6dfa;
+            --accent2: #a78bfa;
+            --accent-dim: rgba(124,109,250,0.12);
+            --accent-glow: rgba(124,109,250,0.25);
+            --green: #34d399;
+            --green-dim: rgba(52,211,153,0.12);
+            --green-border: rgba(52,211,153,0.25);
+            --yellow: #fbbf24;
+            --yellow-dim: rgba(251,191,36,0.12);
+            --yellow-border: rgba(251,191,36,0.25);
+            --red: #f87171;
+            --red-dim: rgba(248,113,113,0.12);
+            --red-border: rgba(248,113,113,0.25);
+            --blue: #60a5fa;
+            --blue-dim: rgba(96,165,250,0.12);
+            --blue-border: rgba(96,165,250,0.25);
+            --text: #eeeeff;
+            --text2: rgba(238,238,255,0.55);
+            --text3: rgba(238,238,255,0.28);
+            --sidebar: 258px;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--ink);
+            color: var(--text);
             display: flex;
             min-height: 100vh;
-            background: #f4f7fc;
+            font-size: 14px;
         }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+        /* ===== SIDEBAR ===== */
         .sidebar {
-            width: 280px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 0;
+            width: var(--sidebar);
+            background: var(--ink2);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            position: fixed; height: 100vh;
+            top: 0; left: 0; z-index: 100;
         }
+
         .sidebar-header {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 22px 18px 20px;
+            border-bottom: 1px solid var(--border2);
         }
-        .sidebar-menu {
-            list-style: none;
-            padding: 20px 0;
+
+        .brand {
+            display: flex; align-items: center; gap: 11px; margin-bottom: 16px;
         }
+
+        .brand-icon {
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, #4c3fd6, #7c3aed);
+            border-radius: 11px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 4px 16px rgba(124,109,250,0.4);
+            flex-shrink: 0;
+        }
+
+        .brand-text h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 14.5px; font-weight: 800;
+            color: var(--text); letter-spacing: -0.3px;
+        }
+
+        .brand-text p {
+            font-size: 10px; color: var(--text3);
+            text-transform: uppercase; letter-spacing: 0.8px;
+        }
+
+        .admin-badge {
+            display: flex; align-items: center; gap: 8px;
+            padding: 9px 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border2);
+            border-radius: 11px;
+        }
+
+        .admin-avatar {
+            width: 30px; height: 30px;
+            background: linear-gradient(135deg, var(--accent), #9333ea);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0;
+        }
+
+        .admin-info p { font-size: 12.5px; font-weight: 600; color: var(--text); }
+        .admin-info span { font-size: 10.5px; color: var(--text3); }
+
+        .sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+
+        .nav-label {
+            font-size: 9.5px; font-weight: 700;
+            color: var(--text3); text-transform: uppercase;
+            letter-spacing: 1.2px; padding: 0 10px;
+            margin: 14px 0 5px;
+        }
+
+        .sidebar-menu { list-style: none; }
+
         .sidebar-menu li {
-            padding: 15px 25px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 10px;
+            cursor: pointer; color: var(--text2);
+            font-size: 13px; font-weight: 500;
+            transition: all 0.18s ease; margin-bottom: 1px;
+            border: 1px solid transparent;
+            user-select: none;
         }
-        .sidebar-menu li:hover,
+
+        .sidebar-menu li:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+
         .sidebar-menu li.active {
-            background: rgba(255,255,255,0.1);
-            border-left: 4px solid white;
+            background: var(--accent-dim);
+            color: var(--accent2); font-weight: 600;
+            border-color: rgba(124,109,250,0.18);
         }
+
+        .sidebar-menu li .menu-icon {
+            width: 28px; height: 28px; border-radius: 7px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .sidebar-menu li.active .menu-icon { background: rgba(124,109,250,0.2); }
+
+        .sidebar-menu li.logout-item { color: rgba(248,113,113,0.7); margin-top: 6px; }
+        .sidebar-menu li.logout-item:hover { background: rgba(248,113,113,0.08); color: var(--red); }
+
+        /* ===== MAIN ===== */
         .main-content {
-            flex: 1;
-            padding: 30px;
+            flex: 1; margin-left: var(--sidebar);
+            padding: 26px 28px;
+            min-height: 100vh;
         }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            margin-bottom: 22px;
+        }
+
+        .page-header h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 21px; font-weight: 800;
+            color: var(--text); letter-spacing: -0.4px;
+        }
+
+        .page-header p { font-size: 13px; color: var(--text3); margin-top: 2px; }
+
+        /* ===== STATS GRID ===== */
         .stats-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px; margin-bottom: 22px;
         }
+
         .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px; padding: 20px;
+            transition: all 0.2s ease;
         }
+
+        .stat-card:hover { border-color: rgba(124,109,250,0.25); transform: translateY(-1px); }
+
+        .stat-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; margin-bottom: 12px;
+        }
+
+        .stat-icon.purple { background: rgba(124,109,250,0.15); }
+        .stat-icon.green  { background: rgba(52,211,153,0.15); }
+        .stat-icon.blue   { background: rgba(96,165,250,0.15); }
+        .stat-icon.yellow { background: rgba(251,191,36,0.15); }
+
+        .stat-label {
+            font-size: 11px; font-weight: 600; color: var(--text3);
+            text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 5px;
+        }
+
         .stat-card h3 {
-            color: #667eea;
-            font-size: 2rem;
-            margin: 10px 0;
+            font-family: 'Syne', sans-serif;
+            font-size: 26px; font-weight: 800;
+            color: var(--text); letter-spacing: -0.5px;
         }
+
+        /* ===== CARD ===== */
         .card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px; padding: 22px;
+            margin-bottom: 22px;
         }
+
         .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;
         }
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
+
+        .card-header h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 15px; font-weight: 700; color: var(--text);
         }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+
+        /* ===== SUMMARY CARDS ===== */
+        .summary-cards {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 12px; margin-bottom: 18px;
         }
-        .btn-danger {
-            background: #e74c3c;
-            color: white;
+
+        .summary-card {
+            background: linear-gradient(135deg, rgba(79,70,229,0.2) 0%, rgba(124,58,237,0.2) 100%);
+            border: 1px solid rgba(124,109,250,0.2);
+            padding: 16px 18px; border-radius: 12px; text-align: center;
         }
-        .btn-success {
-            background: #27ae60;
-            color: white;
+
+        .summary-card div { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+
+        .summary-card h4 {
+            font-family: 'Syne', sans-serif;
+            font-size: 18px; font-weight: 700; color: var(--text);
         }
-        .btn-warning {
-            background: #f39c12;
-            color: white;
+
+        /* ===== TABLE ===== */
+        .table-wrap { overflow-x: auto; }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        thead tr {
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid var(--border);
         }
-        .btn-info {
-            background: #3498db;
-            color: white;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+
         th {
-            background: #f8f9fa;
+            padding: 11px 14px; text-align: left;
+            font-size: 11px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--text3); white-space: nowrap;
         }
-        .badge-success {
-            background: #d4edda;
-            color: #155724;
-            padding: 5px 10px;
-            border-radius: 20px;
+
+        tbody tr { border-bottom: 1px solid var(--border2); transition: background 0.15s; }
+        tbody tr:hover { background: rgba(255,255,255,0.02); }
+        tbody tr:last-child { border-bottom: none; }
+
+        td { padding: 12px 14px; font-size: 13px; color: var(--text2); }
+        td strong { color: var(--text); }
+
+        /* ===== BADGES ===== */
+        .badge-success { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 600; }
+        .badge-warning { background: var(--yellow-dim); color: var(--yellow); border: 1px solid var(--yellow-border); padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 600; }
+        .badge-danger  { background: var(--red-dim);    color: var(--red);    border: 1px solid var(--red-border);    padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 600; }
+        .badge-info    { background: var(--blue-dim);   color: var(--blue);   border: 1px solid var(--blue-border);   padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 600; }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 7px 13px; border: none; border-radius: 8px;
+            cursor: pointer; font-size: 12.5px; font-weight: 500;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.18s ease; white-space: nowrap;
         }
-        .badge-warning {
-            background: #fff3cd;
-            color: #856404;
-            padding: 5px 10px;
-            border-radius: 20px;
-        }
-        .badge-danger {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 5px 10px;
-            border-radius: 20px;
-        }
-        .badge-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            padding: 5px 10px;
-            border-radius: 20px;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            width: 450px;
-            max-width: 90%;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
+
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 2px 12px var(--accent-glow); }
+        .btn-primary:hover { background: #6c5ef0; transform: translateY(-1px); }
+
+        .btn-success { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
+        .btn-success:hover { background: rgba(52,211,153,0.2); }
+
+        .btn-danger { background: var(--red-dim); color: var(--red); border: 1px solid var(--red-border); }
+        .btn-danger:hover { background: rgba(248,113,113,0.2); }
+
+        .btn-warning { background: var(--yellow-dim); color: var(--yellow); border: 1px solid var(--yellow-border); }
+        .btn-warning:hover { background: rgba(251,191,36,0.2); }
+
+        .btn-info { background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue-border); }
+        .btn-info:hover { background: rgba(96,165,250,0.2); }
+
+        /* ===== ACTION BAR ===== */
+        .action-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+        /* ===== SEARCH BOX ===== */
         .search-box {
-            padding: 8px 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            width: 250px;
-            font-size: 14px;
-            transition: all 0.3s;
+            padding: 9px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px; color: var(--text);
+            font-size: 13px; font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
         }
+
+        .search-box::placeholder { color: var(--text3); }
+
         .search-box:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+            border-color: var(--accent);
+            background: rgba(124,109,250,0.07);
+            box-shadow: 0 0 0 3px rgba(124,109,250,0.12);
         }
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
+
+        select.search-box option { background: #1c1c28; color: var(--text); }
+
+        /* ===== PAGINATION ===== */
+        .pagination { display: flex; justify-content: center; gap: 6px; margin-top: 18px; }
+
         .pagination button {
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            background: white;
-            cursor: pointer;
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 7px; cursor: pointer;
+            color: var(--text2); font-size: 12.5px;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.18s;
         }
-        .pagination button.active {
-            background: #667eea;
-            color: white;
+
+        .pagination button:hover { background: var(--accent-dim); color: var(--accent2); border-color: rgba(124,109,250,0.3); }
+        .pagination button.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text3); font-style: italic; }
+
+        /* ===== BULK ACTIONS ===== */
+        .bulk-actions {
+            margin-top: 18px; padding: 16px 18px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border2);
+            border-radius: 12px;
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
         }
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
+
+        .bulk-actions h4 {
+            font-size: 13px; font-weight: 600; color: var(--text2);
+            margin-right: 4px;
         }
-        .summary-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+
+        /* ===== REPORT CONTENT ===== */
+        #reportContent {
             padding: 20px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border2);
+            border-radius: 12px;
+        }
+
+        #reportContent table tr th {
+            background: rgba(255,255,255,0.04) !important;
+            color: var(--text3) !important;
+            font-size: 12px;
+        }
+
+        #reportContent table tr td { color: var(--text) !important; font-weight: 600; }
+
+        /* ===== MODALS ===== */
+        .modal {
+            display: none; position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            justify-content: center; align-items: center;
+            z-index: 999;
+        }
+
+        .modal-content {
+            background: #1a1a28;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 28px;
+            border-radius: 20px;
+            width: 460px; max-width: 95%;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 40px rgba(124,109,250,0.15);
+            animation: modalIn 0.3s cubic-bezier(0.16,1,0.3,1);
+        }
+
+        @keyframes modalIn { from{opacity:0;transform:scale(0.94) translateY(16px)} to{opacity:1;transform:scale(1) translateY(0)} }
+
+        .modal-content h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 16px; font-weight: 700;
+            color: var(--text); margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border2);
+        }
+
+        /* ===== FORM ===== */
+        .form-group { margin-bottom: 14px; }
+
+        .form-group label {
+            display: block; font-size: 11px; font-weight: 600;
+            color: var(--text3); text-transform: uppercase;
+            letter-spacing: 0.8px; margin-bottom: 7px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%; padding: 10px 13px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
             border-radius: 10px;
-            text-align: center;
+            color: var(--text); font-size: 13.5px;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
         }
-        .action-bar {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder { color: var(--text3); }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(124,109,250,0.07);
+            box-shadow: 0 0 0 3px rgba(124,109,250,0.12);
         }
-        .empty-state {
-            text-align: center;
-            padding: 50px;
-            color: #999;
+
+        .form-group input[readonly] {
+            opacity: 0.6; cursor: not-allowed;
         }
-        .strength-meter {
-            height: 4px;
-            background: #e0e0e0;
-            border-radius: 2px;
-            margin-top: 5px;
-            overflow: hidden;
-        }
-        .strength-bar-weak { background: #e74c3c; width: 33%; }
-        .strength-bar-medium { background: #f39c12; width: 66%; }
-        .strength-bar-strong { background: #27ae60; width: 100%; }
-        input.invalid { border-color: #e74c3c !important; }
-        input.valid { border-color: #27ae60 !important; }
+
+        .form-group select option { background: #1c1c28; }
+
+        /* password strength */
+        .strength-meter { height: 3px; background: var(--border); border-radius: 2px; margin-top: 5px; overflow: hidden; }
+        .strength-bar-weak   { background: var(--red);    width: 33%; height: 100%; border-radius: 2px; }
+        .strength-bar-medium { background: var(--yellow); width: 66%; height: 100%; border-radius: 2px; }
+        .strength-bar-strong { background: var(--green);  width: 100%; height: 100%; border-radius: 2px; }
+
+        input.invalid { border-color: rgba(248,113,113,0.5) !important; }
+        input.valid   { border-color: rgba(52,211,153,0.5)  !important; }
+
+        #balanceMessage { font-size: 13px; font-weight: 600; margin: 8px 0; }
+
+        /* modal button row */
+        .modal-btns { display: flex; gap: 10px; margin-top: 18px; }
+
+        /* chart */
+        #emiChart { filter: brightness(1.1); }
     </style>
 </head>
 <body>
+
+    <!-- SIDEBAR -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h2>🏦 Credit Society</h2>
-            <p>Admin Panel</p>
+            <div class="brand">
+                <div class="brand-icon">🏦</div>
+                <div class="brand-text">
+                    <h2>Credit Society</h2>
+                    <p>Admin Panel</p>
+                </div>
+            </div>
+            <div class="admin-badge">
+                <div class="admin-avatar">👑</div>
+                <div class="admin-info">
+                    <p>Administrator</p>
+                    <span>Full Access</span>
+                </div>
+            </div>
         </div>
-        <ul class="sidebar-menu">
-            <li class="active" onclick="showSection('dashboard')">📊 Dashboard</li>
-            <li onclick="showSection('members')">👥 Members</li>
-            <li onclick="showSection('loans')">💰 Loans</li>
-            <li onclick="showSection('emi')">📅 EMI Records</li>
-            <li onclick="showSection('monthly')">📆 Monthly Collection</li>
-            <li onclick="showSection('reports')">📈 Reports</li>
-            <li onclick="logout()">🚪 Logout</li>
-        </ul>
+
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main</div>
+            <ul class="sidebar-menu">
+                <li class="active" onclick="showSection('dashboard')">
+                    <span class="menu-icon">📊</span> Dashboard
+                </li>
+                <li onclick="showSection('members')">
+                    <span class="menu-icon">👥</span> Members
+                </li>
+                <li onclick="showSection('loans')">
+                    <span class="menu-icon">💰</span> Loans
+                </li>
+                <li onclick="showSection('emi')">
+                    <span class="menu-icon">📅</span> EMI Records
+                </li>
+                <li onclick="showSection('monthly')">
+                    <span class="menu-icon">📆</span> Monthly Collection
+                </li>
+                <li onclick="showSection('reports')">
+                    <span class="menu-icon">📈</span> Reports
+                </li>
+            </ul>
+            <div class="nav-label">Account</div>
+            <ul class="sidebar-menu">
+                <li class="logout-item" onclick="logout()">
+                    <span class="menu-icon">🚪</span> Logout
+                </li>
+            </ul>
+        </nav>
     </div>
 
+    <!-- MAIN CONTENT -->
     <div class="main-content">
-        <!-- Dashboard Section -->
+
+        <!-- DASHBOARD -->
         <div id="dashboard-section">
-            <h2>Dashboard Overview</h2>
+            <div class="page-header">
+                <h2>Dashboard Overview</h2>
+                <p>Welcome back, Admin! Here's what's happening today.</p>
+            </div>
             <div class="stats-container">
-                <div class="stat-card"><div>👥 Total Members</div><h3 id="totalMembers">0</h3></div>
-                <div class="stat-card"><div>💰 Active Loans</div><h3 id="totalLoans">0</h3></div>
-                <div class="stat-card"><div>📅 Total EMI Records</div><h3 id="totalEMI">0</h3></div>
-                <div class="stat-card"><div>📆 This Month Collection</div><h3 id="monthlyTotal">₹0</h3></div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">👥</div>
+                    <div class="stat-label">Total Members</div>
+                    <h3 id="totalMembers">0</h3>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">💰</div>
+                    <div class="stat-label">Active Loans</div>
+                    <h3 id="totalLoans">0</h3>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon blue">📅</div>
+                    <div class="stat-label">Total EMI Records</div>
+                    <h3 id="totalEMI">0</h3>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon yellow">📆</div>
+                    <div class="stat-label">This Month Collection</div>
+                    <h3 id="monthlyTotal">₹0</h3>
+                </div>
             </div>
             <div class="card">
-                <h3>📋 Recent Activities</h3>
-                <table id="recentActivitiesTable">
-                    <thead><tr><th>Date</th><th>Activity</th><th>Member</th><th>Amount</th></tr></thead>
-                    <tbody><tr><td colspan="4" class="empty-state">No recent activities</td></tr></tbody>
-                </table>
+                <div class="card-header"><h3>📋 Recent Activities</h3></div>
+                <div class="table-wrap">
+                    <table id="recentActivitiesTable">
+                        <thead><tr><th>Date</th><th>Activity</th><th>Member</th><th>Amount</th></tr></thead>
+                        <tbody><tr><td colspan="4" class="empty-state">No recent activities</td></tr></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <!-- Members Section -->
+        <!-- MEMBERS -->
         <div id="members-section" style="display:none">
+            <div class="page-header"><h2>Member Management</h2></div>
             <div class="card">
                 <div class="card-header">
-                    <h3>👥 Member Management</h3>
+                    <h3>👥 All Members</h3>
                     <div class="action-bar">
                         <input type="text" class="search-box" id="memberSearch" placeholder="Search by name, email or phone..." onkeyup="searchMembers()">
                         <button class="btn btn-primary" onclick="showAddMemberModal()">➕ Add Member</button>
                     </div>
                 </div>
-                <table id="membersTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Loans</th>
-                            <th>EMI</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrap">
+                    <table id="membersTable">
+                        <thead>
+                            <tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Loans</th><th>EMI</th><th>Status</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
                 <div class="pagination" id="memberPagination"></div>
             </div>
         </div>
 
-        <!-- Loans Section -->
+        <!-- LOANS -->
         <div id="loans-section" style="display:none">
+            <div class="page-header"><h2>Loan Management</h2></div>
             <div class="card">
                 <div class="card-header">
-                    <h3>💰 Loan Management</h3>
+                    <h3>💰 All Loans</h3>
                     <div class="action-bar">
                         <input type="text" class="search-box" id="loanSearch" placeholder="Search loans..." onkeyup="searchLoans()">
                         <button class="btn btn-primary" onclick="showAddLoanModal()">➕ Add Loan</button>
                     </div>
                 </div>
-                <table id="loansTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Member</th>
-                            <th>Principal</th>
-                            <th>Interest %</th>
-                            <th>Term</th>
-                            <th>Start</th>
-                            <th>End</th>
-                            <th>Paid</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrap">
+                    <table id="loansTable">
+                        <thead>
+                            <tr><th>ID</th><th>Member</th><th>Principal</th><th>Interest %</th><th>Term</th><th>Start</th><th>End</th><th>Paid</th><th>Status</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
                 <div class="pagination" id="loanPagination"></div>
             </div>
         </div>
 
-        <!-- EMI Records Section -->
+        <!-- EMI RECORDS -->
         <div id="emi-section" style="display:none">
+            <div class="page-header"><h2>EMI Records</h2></div>
             <div class="card">
                 <div class="card-header">
                     <h3>📅 EMI Records</h3>
@@ -349,7 +612,7 @@
                             <option value="">All Months</option>
                         </select>
                         <input type="text" class="search-box" id="emiSearch" placeholder="Search EMI..." onkeyup="searchEMI()">
-                        <button class="btn btn-primary" onclick="exportEMIToExcel()">📥 Export</button>
+                        <button class="btn btn-info" onclick="exportEMIToExcel()">📥 Export</button>
                     </div>
                 </div>
                 <div class="summary-cards">
@@ -358,28 +621,21 @@
                     <div class="summary-card"><div>Collected</div><h4 id="emiCollectedAmount">₹0</h4></div>
                     <div class="summary-card"><div>Pending</div><h4 id="emiPendingAmount">₹0</h4></div>
                 </div>
-                <table id="emiTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Member</th>
-                            <th>Amount</th>
-                            <th>Paid</th>
-                            <th>Date</th>
-                            <th>Mode</th>
-                            <th>Late Fee</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrap">
+                    <table id="emiTable">
+                        <thead>
+                            <tr><th>ID</th><th>Member</th><th>Amount</th><th>Paid</th><th>Date</th><th>Mode</th><th>Late Fee</th><th>Status</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
                 <div class="pagination" id="emiPagination"></div>
             </div>
         </div>
 
-        <!-- Monthly Collection Section -->
+        <!-- MONTHLY COLLECTION -->
         <div id="monthly-section" style="display:none">
+            <div class="page-header"><h2>Monthly Collection</h2></div>
             <div class="card">
                 <div class="card-header">
                     <h3>📆 Monthly Collection</h3>
@@ -396,25 +652,17 @@
                     <div class="summary-card"><div>Collected</div><h4 id="collectedAmountMonth">₹0</h4></div>
                     <div class="summary-card"><div>Pending</div><h4 id="pendingAmountMonth">₹0</h4></div>
                 </div>
-                <table id="monthlyTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Member</th>
-                            <th>Amount</th>
-                            <th>Paid</th>
-                            <th>Date</th>
-                            <th>Mode</th>
-                            <th>Late Fee</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <div style="margin-top:20px; padding:15px; background:#f0f7ff; border-radius:10px;">
+                <div class="table-wrap">
+                    <table id="monthlyTable">
+                        <thead>
+                            <tr><th>ID</th><th>Member</th><th>Amount</th><th>Paid</th><th>Date</th><th>Mode</th><th>Late Fee</th><th>Status</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="bulk-actions">
                     <h4>⚡ Bulk Actions</h4>
-                    <select id="bulkPaymentMode">
+                    <select id="bulkPaymentMode" class="search-box" style="width:auto;">
                         <option value="Cash">Cash</option>
                         <option value="Online">Online</option>
                         <option value="Cheque">Cheque</option>
@@ -424,148 +672,84 @@
             </div>
         </div>
 
-        <!-- Reports Section -->
+        <!-- REPORTS -->
         <div id="reports-section" style="display:none">
+            <div class="page-header"><h2>Financial Reports</h2></div>
             <div class="card">
-                <h3>📈 Financial Reports</h3>
-                
-                <!-- Chart Container -->
-                <div style="margin: 30px 0;">
-                    <canvas id="emiChart" style="width:100%; max-width:600px; margin:0 auto;"></canvas>
+                <div class="card-header"><h3>📈 Reports & Analytics</h3></div>
+                <div style="margin:20px 0; max-width:600px;">
+                    <canvas id="emiChart"></canvas>
                 </div>
-                
-                <div class="action-bar" style="margin-bottom: 20px;">
+                <div class="action-bar" style="margin-bottom:18px;">
                     <button class="btn btn-primary" onclick="generateReport('daily')">Daily</button>
                     <button class="btn btn-primary" onclick="generateReport('monthly')">Monthly</button>
                     <button class="btn btn-primary" onclick="generateReport('yearly')">Yearly</button>
                 </div>
-                <div id="reportContent" style="padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                <div id="reportContent">
                     <p class="empty-state">Select a report type to generate</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Add Member Modal -->
+    </div><!-- end main-content -->
+
+    <!-- ADD MEMBER MODAL -->
     <div id="addMemberModal" class="modal">
         <div class="modal-content">
             <h3>➕ Add New Member</h3>
-            
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" id="memberFullName" placeholder="Enter full name" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="memberEmail" placeholder="Enter email" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Phone</label>
-                <input type="tel" id="memberPhone" placeholder="Enter phone" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="memberUsername" placeholder="Enter username" onkeyup="checkAddMemberButton()">
-            </div>
-            
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="memberPassword" placeholder="Enter password" onkeyup="checkAddMemberButton()">
-            </div>
-            
-            <div class="form-group">
-                <label>Address</label>
-                <textarea id="memberAddress" placeholder="Enter address" rows="2"></textarea>
-            </div>
-            
-            <div style="display: flex; gap: 10px;">
+            <div class="form-group"><label>Full Name</label><input type="text" id="memberFullName" placeholder="Enter full name" required></div>
+            <div class="form-group"><label>Email</label><input type="email" id="memberEmail" placeholder="Enter email" required></div>
+            <div class="form-group"><label>Phone</label><input type="tel" id="memberPhone" placeholder="Enter phone" required></div>
+            <div class="form-group"><label>Username</label><input type="text" id="memberUsername" placeholder="Enter username" onkeyup="checkAddMemberButton()"></div>
+            <div class="form-group"><label>Password</label><input type="password" id="memberPassword" placeholder="Enter password" onkeyup="checkAddMemberButton()"></div>
+            <div class="form-group"><label>Address</label><textarea id="memberAddress" placeholder="Enter address" rows="2"></textarea></div>
+            <div class="modal-btns">
                 <button class="btn btn-success" onclick="addMember()" id="addMemberBtn" disabled>💾 Save</button>
                 <button class="btn btn-danger" onclick="closeModals()">❌ Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Add Loan Modal -->
+    <!-- ADD LOAN MODAL -->
     <div id="addLoanModal" class="modal">
         <div class="modal-content">
             <h3>💰 Add New Loan</h3>
-            <div class="form-group">
-                <label>Member</label>
-                <select id="loanMember" required>
-                    <option value="">Select Member</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Amount (₹)</label>
-                <input type="number" id="loanAmount" required>
-            </div>
-            <div class="form-group">
-                <label>Interest Rate (%)</label>
-                <input type="number" step="0.1" id="loanInterest" required>
-            </div>
-            <div class="form-group">
-                <label>Term (months)</label>
-                <input type="number" id="loanTerm" value="12" required>
-            </div>
-            <div class="form-group">
-                <label>Start Date</label>
-                <input type="date" id="loanStartDate" required>
-            </div>
-            <div style="display: flex; gap: 10px;">
+            <div class="form-group"><label>Member</label><select id="loanMember" required><option value="">Select Member</option></select></div>
+            <div class="form-group"><label>Amount (₹)</label><input type="number" id="loanAmount" required></div>
+            <div class="form-group"><label>Interest Rate (%)</label><input type="number" step="0.1" id="loanInterest" required></div>
+            <div class="form-group"><label>Term (months)</label><input type="number" id="loanTerm" value="12" required></div>
+            <div class="form-group"><label>Start Date</label><input type="date" id="loanStartDate" required></div>
+            <div class="modal-btns">
                 <button class="btn btn-success" onclick="addLoan()">💾 Save</button>
                 <button class="btn btn-danger" onclick="closeModals()">❌ Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Close Loan Modal -->
+    <!-- CLOSE LOAN MODAL -->
     <div id="closeLoanModal" class="modal">
         <div class="modal-content">
-            <h3>💰 Close Loan</h3>
+            <h3>✅ Close Loan</h3>
             <input type="hidden" id="closeLoanId">
-            <div class="form-group">
-                <label>Member Name</label>
-                <input type="text" id="closeMemberName" readonly>
-            </div>
-            <div class="form-group">
-                <label>Principal Amount</label>
-                <input type="text" id="closePrincipal" readonly>
-            </div>
-            <div class="form-group">
-                <label>Interest Rate (%)</label>
-                <input type="text" id="closeInterest" readonly>
-            </div>
-            <div class="form-group">
-                <label>Total Interest (Calculated)</label>
-                <input type="text" id="totalInterest" readonly>
-            </div>
-            <div class="form-group">
-                <label>Total Payable (Principal + Interest)</label>
-                <input type="text" id="totalPayable" readonly>
-            </div>
-            <div class="form-group">
-                <label>Amount Paid</label>
-                <input type="number" id="paidAmount" value="" required onkeyup="calculateCloseLoan()">
-            </div>
-            <div class="form-group">
-                <label>Closing Date</label>
-                <input type="date" id="closingDate" value="" required>
-            </div>
-            <div style="color: #27ae60; font-weight: bold; margin: 10px 0;" id="balanceMessage"></div>
-            <div style="display: flex; gap: 10px;">
+            <div class="form-group"><label>Member Name</label><input type="text" id="closeMemberName" readonly></div>
+            <div class="form-group"><label>Principal Amount</label><input type="text" id="closePrincipal" readonly></div>
+            <div class="form-group"><label>Interest Rate (%)</label><input type="text" id="closeInterest" readonly></div>
+            <div class="form-group"><label>Total Interest</label><input type="text" id="totalInterest" readonly></div>
+            <div class="form-group"><label>Total Payable</label><input type="text" id="totalPayable" readonly></div>
+            <div class="form-group"><label>Amount Paid</label><input type="number" id="paidAmount" required onkeyup="calculateCloseLoan()"></div>
+            <div class="form-group"><label>Closing Date</label><input type="date" id="closingDate" required></div>
+            <div style="font-size:13px;font-weight:600;margin:8px 0;" id="balanceMessage"></div>
+            <div class="modal-btns">
                 <button class="btn btn-success" onclick="confirmCloseLoan()" id="confirmCloseBtn" disabled>✅ Close Loan</button>
                 <button class="btn btn-danger" onclick="closeLoanModal()">❌ Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Payment Modal -->
+    <!-- PAYMENT MODAL -->
     <div id="paymentModal" class="modal">
         <div class="modal-content">
-            <h3>💰 Mark Payment</h3>
+            <h3>💳 Mark Payment</h3>
             <input type="hidden" id="paymentId">
             <div class="form-group"><label>Member</label><input type="text" id="paymentMemberName" readonly></div>
             <div class="form-group"><label>Paid Amount</label><input type="number" id="paymentPaid" value="1000"></div>
@@ -578,29 +762,22 @@
                 </select>
             </div>
             <div class="form-group"><label>Late Fee</label><input type="number" id="paymentLateFee" value="0"></div>
-            <button class="btn btn-success" onclick="savePayment()">💾 Save</button>
-            <button class="btn btn-danger" onclick="closePaymentModal()">❌ Cancel</button>
+            <div class="modal-btns">
+                <button class="btn btn-success" onclick="savePayment()">💾 Save</button>
+                <button class="btn btn-danger" onclick="closePaymentModal()">❌ Cancel</button>
+            </div>
         </div>
     </div>
 
-    <!-- Edit Password Modal -->
+    <!-- PASSWORD MODAL -->
     <div id="passwordModal" class="modal">
         <div class="modal-content">
             <h3>🔑 Edit Password</h3>
             <input type="hidden" id="passwordMemberId">
-            <div class="form-group">
-                <label>Member Name</label>
-                <input type="text" id="passwordMemberName" readonly>
-            </div>
-            <div class="form-group">
-                <label>New Password</label>
-                <input type="password" id="newPassword" placeholder="Enter new password" onkeyup="checkPasswordMatch()">
-            </div>
-            <div class="form-group">
-                <label>Confirm Password</label>
-                <input type="password" id="confirmPassword" placeholder="Confirm new password" onkeyup="checkPasswordMatch()">
-            </div>
-            <div style="display: flex; gap: 10px;">
+            <div class="form-group"><label>Member Name</label><input type="text" id="passwordMemberName" readonly></div>
+            <div class="form-group"><label>New Password</label><input type="password" id="newPassword" placeholder="Enter new password" onkeyup="checkPasswordMatch()"></div>
+            <div class="form-group"><label>Confirm Password</label><input type="password" id="confirmPassword" placeholder="Confirm new password" onkeyup="checkPasswordMatch()"></div>
+            <div class="modal-btns">
                 <button class="btn btn-success" onclick="updatePassword()" id="updatePasswordBtn" disabled>💾 Update</button>
                 <button class="btn btn-danger" onclick="closePasswordModal()">❌ Cancel</button>
             </div>
@@ -666,16 +843,16 @@
                 let memberLoans = loans.filter(l => l.userID == m.id).length;
                 let memberEMI = emiMonthlyData.filter(e => e.member_id == m.id).length;
                 tbody.innerHTML += `<tr>
-                    <td>${m.id}</td>
-                    <td>${m.fullName}</td>
+                    <td><strong>${m.id}</strong></td>
+                    <td><strong>${m.fullName}</strong></td>
                     <td>${m.email}</td>
                     <td>${m.phone}</td>
                     <td>${memberLoans}</td>
                     <td>${memberEMI}</td>
                     <td><span class="badge-success">Active</span></td>
                     <td>
-                        <button class="btn btn-danger" onclick="deleteMember(${m.id})">Delete</button>
-                        <button class="btn btn-warning" onclick="showPasswordModal(${m.id}, '${m.fullName}')">🔑 Edit Password</button>
+                        <button class="btn btn-danger" onclick="deleteMember(${m.id})">🗑️ Delete</button>
+                        <button class="btn btn-warning" onclick="showPasswordModal(${m.id}, '${m.fullName}')">🔑 Password</button>
                     </td>
                 </tr>`;
             });
@@ -710,10 +887,7 @@
         async function loadLoans() {
             try {
                 let res = await fetch('/api/Auth/loans');
-                if (res.ok) {
-                    loans = await res.json();
-                    displayLoans();
-                }
+                if (res.ok) { loans = await res.json(); displayLoans(); }
             } catch (e) { console.error(e); }
         }
 
@@ -726,21 +900,21 @@
                 let statusClass = l.isClosed ? 'info' : (l.status === 'Active' ? 'success' : 'warning');
                 let statusText = l.isClosed ? 'Closed' : l.status;
                 tbody.innerHTML += `<tr>
-                    <td>${l.loanId}</td>
-                    <td>${l.memberName}</td>
+                    <td><strong>${l.loanId}</strong></td>
+                    <td><strong>${l.memberName}</strong></td>
                     <td>₹${l.amount}</td>
-                    <td>${l.interest}%</td>
-                    <td>${l.term} months</td>
+                    <td><span class="badge-info">${l.interest}%</span></td>
+                    <td>${l.term} mo</td>
                     <td>${l.startDate}</td>
                     <td>${l.endDate}</td>
                     <td>₹${l.paidAmount || 0}</td>
                     <td><span class="badge-${statusClass}">${statusText}</span></td>
                     <td>
-                        ${!l.isClosed ? 
-                            `<button class="btn btn-success" onclick="showCloseLoanModal(${l.loanId}, '${l.memberName}', ${l.amount}, ${l.interest})">✅ Close</button>` : 
+                        ${!l.isClosed ?
+                            `<button class="btn btn-success" onclick="showCloseLoanModal(${l.loanId}, '${l.memberName}', ${l.amount}, ${l.interest})">✅ Close</button>` :
                             `<button class="btn btn-info" onclick="downloadReceipt('loan', ${l.loanId})">📥 Receipt</button>`
                         }
-                        <button class="btn btn-danger" onclick="deleteLoan(${l.loanId})">🗑️ Delete</button>
+                        <button class="btn btn-danger" onclick="deleteLoan(${l.loanId})">🗑️</button>
                     </td>
                 </tr>`;
             });
@@ -752,11 +926,7 @@
             let url = month ? `/api/MonthlyCollection/${month}` : '/api/MonthlyCollection/all';
             try {
                 let res = await fetch(url);
-                if (res.ok) {
-                    emiMonthlyData = await res.json();
-                    displayEMIMonthly();
-                    updateEMISummary();
-                }
+                if (res.ok) { emiMonthlyData = await res.json(); displayEMIMonthly(); updateEMISummary(); }
             } catch (e) { console.error(e); }
         }
 
@@ -768,8 +938,8 @@
             emiMonthlyData.slice(start, start + itemsPerPage).forEach(e => {
                 let statusClass = e.status == 'Paid' ? 'success' : e.status == 'Late' ? 'danger' : 'warning';
                 tbody.innerHTML += `<tr>
-                    <td>${e.id}</td>
-                    <td>${e.member_name}</td>
+                    <td><strong>${e.id}</strong></td>
+                    <td><strong>${e.member_name}</strong></td>
                     <td>₹1000</td>
                     <td>₹${e.paid_amount || 0}</td>
                     <td>${e.payment_date || '-'}</td>
@@ -778,24 +948,18 @@
                     <td><span class="badge-${statusClass}">${e.status || 'Pending'}</span></td>
                     <td>
                         <button class="btn btn-success" onclick="openPaymentModal(${e.id}, '${e.member_name}', ${e.paid_amount || 0})">Pay</button>
-                        <button class="btn btn-info" onclick="downloadReceipt('emi', ${e.id})">📥 Receipt</button>
+                        <button class="btn btn-info" onclick="downloadReceipt('emi', ${e.id})">📥</button>
                     </td>
                 </tr>`;
             });
             updatePagination('emi');
         }
 
-        function downloadReceipt(type, id) {
-            window.open(`/api/Receipt/${type}/${id}`, '_blank');
-        }
+        function downloadReceipt(type, id) { window.open(`/api/Receipt/${type}/${id}`, '_blank'); }
 
         function updateEMISummary() {
             let membersSet = new Set(), total = 0, paid = 0;
-            emiMonthlyData.forEach(e => {
-                membersSet.add(e.member_id);
-                total += 1000;
-                paid += e.paid_amount || 0;
-            });
+            emiMonthlyData.forEach(e => { membersSet.add(e.member_id); total += 1000; paid += e.paid_amount || 0; });
             document.getElementById('emiTotalMembers').innerText = membersSet.size;
             document.getElementById('emiTotalAmount').innerText = '₹' + total;
             document.getElementById('emiCollectedAmount').innerText = '₹' + paid;
@@ -806,40 +970,30 @@
             let term = document.getElementById('emiSearch').value.toLowerCase();
             let filtered = emiMonthlyData.filter(e => e.member_name?.toLowerCase().includes(term));
             let tbody = document.querySelector('#emiTable tbody');
-            if (!tbody) tbody = document.getElementById('emiTable');
             tbody.innerHTML = '';
             filtered.forEach(e => {
                 let statusClass = e.status == 'Paid' ? 'success' : e.status == 'Late' ? 'danger' : 'warning';
                 tbody.innerHTML += `<tr>
-                    <td>${e.id}</td>
-                    <td>${e.member_name}</td>
-                    <td>₹1000</td>
-                    <td>₹${e.paid_amount || 0}</td>
-                    <td>${e.payment_date || '-'}</td>
-                    <td>${e.payment_mode || '-'}</td>
+                    <td><strong>${e.id}</strong></td><td><strong>${e.member_name}</strong></td>
+                    <td>₹1000</td><td>₹${e.paid_amount || 0}</td>
+                    <td>${e.payment_date || '-'}</td><td>${e.payment_mode || '-'}</td>
                     <td>₹${e.late_fee || 0}</td>
                     <td><span class="badge-${statusClass}">${e.status || 'Pending'}</span></td>
                     <td>
                         <button class="btn btn-success" onclick="openPaymentModal(${e.id}, '${e.member_name}', ${e.paid_amount || 0})">Pay</button>
-                        <button class="btn btn-info" onclick="downloadReceipt('emi', ${e.id})">📥 Receipt</button>
+                        <button class="btn btn-info" onclick="downloadReceipt('emi', ${e.id})">📥</button>
                     </td>
                 </tr>`;
             });
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No matching records found</td></tr>';
-            }
+            if (filtered.length === 0) tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No matching records found</td></tr>';
         }
 
         function exportEMIToExcel() {
             let csv = "ID,Member,Amount,Paid,Date,Mode,Late Fee,Status\n";
-            emiMonthlyData.forEach(e => {
-                csv += `${e.id},${e.member_name},1000,${e.paid_amount || 0},${e.payment_date || '-'},${e.payment_mode || '-'},${e.late_fee || 0},${e.status || 'Pending'}\n`;
-            });
-            let blob = new Blob([csv], { type: 'text/csv' });
+            emiMonthlyData.forEach(e => { csv += `${e.id},${e.member_name},1000,${e.paid_amount || 0},${e.payment_date || '-'},${e.payment_mode || '-'},${e.late_fee || 0},${e.status || 'Pending'}\n`; });
             let a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'emi.csv';
-            a.click();
+            a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+            a.download = 'emi.csv'; a.click();
         }
 
         async function loadMonthlyCollection() {
@@ -847,29 +1001,21 @@
             if (!month) return;
             try {
                 let res = await fetch(`/api/MonthlyCollection/${month}`);
-                if (res.ok) {
-                    monthlyData = await res.json();
-                    displayMonthlyCollection();
-                }
+                if (res.ok) { monthlyData = await res.json(); displayMonthlyCollection(); }
             } catch (e) { console.error(e); }
         }
 
         function displayMonthlyCollection() {
             let tbody = document.querySelector('#monthlyTable tbody');
-            if (!tbody) tbody = document.getElementById('monthlyTable');
             tbody.innerHTML = '';
             let totalAmt = 0, totalPaid = 0;
             monthlyData.forEach(m => {
-                totalAmt += 1000;
-                totalPaid += m.paid_amount || 0;
+                totalAmt += 1000; totalPaid += m.paid_amount || 0;
                 let statusClass = m.status == 'Paid' ? 'success' : m.status == 'Late' ? 'danger' : 'warning';
                 tbody.innerHTML += `<tr>
-                    <td>${m.id}</td>
-                    <td>${m.member_name}</td>
-                    <td>₹1000</td>
-                    <td>₹${m.paid_amount || 0}</td>
-                    <td>${m.payment_date || '-'}</td>
-                    <td>${m.payment_mode || '-'}</td>
+                    <td><strong>${m.id}</strong></td><td><strong>${m.member_name}</strong></td>
+                    <td>₹1000</td><td>₹${m.paid_amount || 0}</td>
+                    <td>${m.payment_date || '-'}</td><td>${m.payment_mode || '-'}</td>
                     <td>₹${m.late_fee || 0}</td>
                     <td><span class="badge-${statusClass}">${m.status || 'Pending'}</span></td>
                     <td><button class="btn btn-success" onclick="openPaymentModal(${m.id}, '${m.member_name}', ${m.paid_amount || 0})">Pay</button></td>
@@ -885,14 +1031,8 @@
             let month = document.getElementById('monthYear').value;
             if (!month) { alert('Select month'); return; }
             try {
-                await fetch('/api/MonthlyCollection/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ monthYear: month })
-                });
-                alert('✅ Generated');
-                loadMonthlyCollection();
-                loadEMIByMonth();
+                await fetch('/api/MonthlyCollection/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ monthYear: month }) });
+                alert('✅ Generated'); loadMonthlyCollection(); loadEMIByMonth();
             } catch (e) { alert('❌ Error'); }
         }
 
@@ -905,28 +1045,14 @@
             document.getElementById('paymentModal').style.display = 'flex';
         }
 
-        function closePaymentModal() {
-            document.getElementById('paymentModal').style.display = 'none';
-        }
+        function closePaymentModal() { document.getElementById('paymentModal').style.display = 'none'; }
 
         async function savePayment() {
             let id = document.getElementById('paymentId').value;
-            let data = {
-                paidAmount: parseFloat(document.getElementById('paymentPaid').value),
-                paymentDate: document.getElementById('paymentDate').value,
-                paymentMode: document.getElementById('paymentMode').value,
-                lateFee: parseFloat(document.getElementById('paymentLateFee').value)
-            };
+            let data = { paidAmount: parseFloat(document.getElementById('paymentPaid').value), paymentDate: document.getElementById('paymentDate').value, paymentMode: document.getElementById('paymentMode').value, lateFee: parseFloat(document.getElementById('paymentLateFee').value) };
             try {
-                await fetch(`/api/MonthlyCollection/update/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                alert('✅ Payment saved');
-                closePaymentModal();
-                loadMonthlyCollection();
-                loadEMIByMonth();
+                await fetch(`/api/MonthlyCollection/update/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                alert('✅ Payment saved'); closePaymentModal(); loadMonthlyCollection(); loadEMIByMonth();
             } catch (e) { alert('❌ Error'); }
         }
 
@@ -936,14 +1062,8 @@
             let mode = document.getElementById('bulkPaymentMode').value;
             let date = new Date().toISOString().split('T')[0];
             try {
-                await fetch('/api/MonthlyCollection/mark-all-paid', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ monthYear: month, paymentMode: mode, paymentDate: date })
-                });
-                alert('✅ All paid');
-                loadMonthlyCollection();
-                loadEMIByMonth();
+                await fetch('/api/MonthlyCollection/mark-all-paid', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ monthYear: month, paymentMode: mode, paymentDate: date }) });
+                alert('✅ All paid'); loadMonthlyCollection(); loadEMIByMonth();
             } catch (e) { alert('❌ Error'); }
         }
 
@@ -961,48 +1081,41 @@
         }
 
         function loadChart() {
-            fetch('/api/Member/stats')
-                .then(res => res.json())
-                .then(data => {
-                    let totalEMI = data.totalEMI * 1000;
-                    let collected = data.monthlyTotal;
-                    let pending = totalEMI - collected;
-                    
-                    if (emiChart) emiChart.destroy();
-                    
-                    let ctx = document.getElementById('emiChart').getContext('2d');
-                    emiChart = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['Total EMI', 'Collected', 'Pending'],
-                            datasets: [{
-                                label: 'Amount (₹)',
-                                data: [totalEMI, collected, pending],
-                                backgroundColor: ['#3498db', '#27ae60', '#e74c3c'],
-                                borderRadius: 5
-                            }]
+            fetch('/api/Member/stats').then(res => res.json()).then(data => {
+                let totalEMI = data.totalEMI * 1000, collected = data.monthlyTotal, pending = totalEMI - collected;
+                if (emiChart) emiChart.destroy();
+                let ctx = document.getElementById('emiChart').getContext('2d');
+                emiChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Total EMI', 'Collected', 'Pending'],
+                        datasets: [{
+                            label: 'Amount (₹)',
+                            data: [totalEMI, collected, pending],
+                            backgroundColor: ['rgba(124,109,250,0.7)', 'rgba(52,211,153,0.7)', 'rgba(248,113,113,0.7)'],
+                            borderColor: ['#7c6dfa', '#34d399', '#f87171'],
+                            borderWidth: 1, borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: 'EMI Collection Summary', color: 'rgba(238,238,255,0.6)', font: { size: 13 } }
                         },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: { display: false },
-                                title: { display: true, text: 'EMI Collection Summary' }
-                            }
+                        scales: {
+                            x: { ticks: { color: 'rgba(238,238,255,0.5)' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                            y: { ticks: { color: 'rgba(238,238,255,0.5)' }, grid: { color: 'rgba(255,255,255,0.05)' } }
                         }
-                    });
+                    }
                 });
+            });
         }
 
-        // Add Member Functions
         function checkAddMemberButton() {
-            const username = document.getElementById('memberUsername').value;
-            const password = document.getElementById('memberPassword').value;
-            const fullName = document.getElementById('memberFullName').value;
-            const email = document.getElementById('memberEmail').value;
-            const phone = document.getElementById('memberPhone').value;
-            
-            const isValid = username && password && fullName && email && phone;
-            document.getElementById('addMemberBtn').disabled = !isValid;
+            const u = document.getElementById('memberUsername').value, p = document.getElementById('memberPassword').value;
+            const fn = document.getElementById('memberFullName').value, e = document.getElementById('memberEmail').value, ph = document.getElementById('memberPhone').value;
+            document.getElementById('addMemberBtn').disabled = !(u && p && fn && e && ph);
         }
 
         document.getElementById('memberFullName').addEventListener('keyup', checkAddMemberButton);
@@ -1012,158 +1125,65 @@
         document.getElementById('memberPassword').addEventListener('keyup', checkAddMemberButton);
 
         function showAddMemberModal() {
-            document.getElementById('memberFullName').value = '';
-            document.getElementById('memberEmail').value = '';
-            document.getElementById('memberPhone').value = '';
-            document.getElementById('memberUsername').value = '';
-            document.getElementById('memberPassword').value = '';
-            document.getElementById('memberAddress').value = '';
+            ['memberFullName','memberEmail','memberPhone','memberUsername','memberPassword','memberAddress'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('addMemberBtn').disabled = true;
             document.getElementById('addMemberModal').style.display = 'flex';
         }
 
         async function addMember() {
-            const member = {
-                username: document.getElementById('memberUsername').value,
-                password: document.getElementById('memberPassword').value,
-                fullName: document.getElementById('memberFullName').value,
-                email: document.getElementById('memberEmail').value,
-                phone: document.getElementById('memberPhone').value,
-                address: document.getElementById('memberAddress').value,
-                role: 'Member'
-            };
-            
+            const member = { username: document.getElementById('memberUsername').value, password: document.getElementById('memberPassword').value, fullName: document.getElementById('memberFullName').value, email: document.getElementById('memberEmail').value, phone: document.getElementById('memberPhone').value, address: document.getElementById('memberAddress').value, role: 'Member' };
             try {
-                const response = await fetch('/api/Auth/users', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(member)
-                });
-                
-                if (response.ok) {
-                    alert('✅ Member added successfully!');
-                    closeModals();
-                    loadMembers();
-                } else {
-                    const error = await response.json();
-                    alert('❌ Error: ' + (error.message || 'Failed to add member'));
-                }
-            } catch (error) {
-                alert('❌ Server error!');
-            }
+                const response = await fetch('/api/Auth/users', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(member) });
+                if (response.ok) { alert('✅ Member added successfully!'); closeModals(); loadMembers(); }
+                else { const error = await response.json(); alert('❌ Error: ' + (error.message || 'Failed to add member')); }
+            } catch (error) { alert('❌ Server error!'); }
         }
 
-        // Search Members Function - FIXED VERSION
         let searchTimeout;
         function searchMembers() {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
-                performMemberSearch();
+                let term = document.getElementById('memberSearch').value.toLowerCase();
+                let tbody = document.querySelector('#membersTable tbody');
+                if (!tbody) return;
+                if (term === '') { displayMembers(); return; }
+                let filtered = members.filter(m => (m.fullName && m.fullName.toLowerCase().includes(term)) || (m.email && m.email.toLowerCase().includes(term)) || (m.phone && m.phone.includes(term)));
+                tbody.innerHTML = '';
+                filtered.forEach(m => {
+                    let ml = loans.filter(l => l.userID == m.id).length, me = emiMonthlyData.filter(e => e.member_id == m.id).length;
+                    tbody.innerHTML += `<tr><td><strong>${m.id}</strong></td><td><strong>${m.fullName}</strong></td><td>${m.email}</td><td>${m.phone}</td><td>${ml}</td><td>${me}</td><td><span class="badge-success">Active</span></td><td><button class="btn btn-danger" onclick="deleteMember(${m.id})">🗑️ Delete</button><button class="btn btn-warning" onclick="showPasswordModal(${m.id}, '${m.fullName}')">🔑 Password</button></td></tr>`;
+                });
+                if (filtered.length === 0) tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No members found</td></tr>';
             }, 300);
         }
 
-        function performMemberSearch() {
-            let term = document.getElementById('memberSearch').value.toLowerCase();
-            let tbody = document.querySelector('#membersTable tbody');
-            
-            if (!tbody) return;
-            
-            if (term === '') {
-                displayMembers();
-                return;
-            }
-            
-            let filtered = members.filter(m => 
-                (m.fullName && m.fullName.toLowerCase().includes(term)) || 
-                (m.email && m.email.toLowerCase().includes(term)) ||
-                (m.phone && m.phone.includes(term))
-            );
-            
-            tbody.innerHTML = '';
-            filtered.forEach(m => {
-                let memberLoans = loans.filter(l => l.userID == m.id).length;
-                let memberEMI = emiMonthlyData.filter(e => e.member_id == m.id).length;
-                tbody.innerHTML += `<tr>
-                    <td>${m.id}</td>
-                    <td>${m.fullName}</td>
-                    <td>${m.email}</td>
-                    <td>${m.phone}</td>
-                    <td>${memberLoans}</td>
-                    <td>${memberEMI}</td>
-                    <td><span class="badge-success">Active</span></td>
-                    <td>
-                        <button class="btn btn-danger" onclick="deleteMember(${m.id})">Delete</button>
-                        <button class="btn btn-warning" onclick="showPasswordModal(${m.id}, '${m.fullName}')">🔑 Edit Password</button>
-                    </td>
-                </tr>`;
-            });
-            
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;">No members found</td></tr>';
-            }
-        }
-
-        // Add Loan Functions
         function showAddLoanModal() {
             document.getElementById('loanStartDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('addLoanModal').style.display = 'flex';
         }
 
         async function addLoan() {
-            let memberId = document.getElementById('loanMember').value;
-            let amount = document.getElementById('loanAmount').value;
-            let interest = document.getElementById('loanInterest').value;
-            let term = document.getElementById('loanTerm').value;
-            let startDate = document.getElementById('loanStartDate').value;
-            
-            if (!memberId || !amount || !interest || !term || !startDate) { 
-                alert('Please fill all fields'); 
-                return; 
-            }
-            
+            let memberId = document.getElementById('loanMember').value, amount = document.getElementById('loanAmount').value, interest = document.getElementById('loanInterest').value, term = document.getElementById('loanTerm').value, startDate = document.getElementById('loanStartDate').value;
+            if (!memberId || !amount || !interest || !term || !startDate) { alert('Please fill all fields'); return; }
             try {
-                const response = await fetch('/api/Auth/loans', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userID: parseInt(memberId),
-                        loanAmount: parseFloat(amount),
-                        interestRate: parseFloat(interest),
-                        loanTerm: parseInt(term),
-                        startDate: startDate
-                    })
-                });
-                
-                if (response.ok) {
-                    alert('✅ Loan added successfully');
-                    closeModals();
-                    loadLoans();
-                } else {
-                    const error = await response.json();
-                    alert('❌ Error: ' + (error.message || 'Failed to add loan'));
-                }
-            } catch (error) {
-                alert('❌ Error: ' + error);
-            }
+                const response = await fetch('/api/Auth/loans', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userID: parseInt(memberId), loanAmount: parseFloat(amount), interestRate: parseFloat(interest), loanTerm: parseInt(term), startDate }) });
+                if (response.ok) { alert('✅ Loan added successfully'); closeModals(); loadLoans(); }
+                else { const error = await response.json(); alert('❌ Error: ' + (error.message || 'Failed to add loan')); }
+            } catch (error) { alert('❌ Error: ' + error); }
         }
 
-        // Close Loan Functions
         function showCloseLoanModal(loanId, memberName, amount, interest) {
             document.getElementById('closeLoanId').value = loanId;
             document.getElementById('closeMemberName').value = memberName;
             document.getElementById('closePrincipal').value = '₹' + amount;
             document.getElementById('closeInterest').value = interest + '%';
-            
-            let totalInterest = (amount * interest / 100);
-            let totalPayable = amount + totalInterest;
-            
+            let totalInterest = (amount * interest / 100), totalPayable = amount + totalInterest;
             document.getElementById('totalInterest').value = '₹' + totalInterest.toFixed(2);
             document.getElementById('totalPayable').value = '₹' + totalPayable.toFixed(2);
             document.getElementById('paidAmount').value = totalPayable.toFixed(2);
             document.getElementById('closingDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('balanceMessage').innerHTML = '';
             document.getElementById('confirmCloseBtn').disabled = false;
-            
             document.getElementById('closeLoanModal').style.display = 'flex';
         }
 
@@ -1171,62 +1191,27 @@
             let principal = parseFloat(document.getElementById('closePrincipal').value.replace('₹', ''));
             let interest = parseFloat(document.getElementById('closeInterest').value.replace('%', ''));
             let paid = parseFloat(document.getElementById('paidAmount').value);
-            
-            let totalInterest = (principal * interest / 100);
-            let totalPayable = principal + totalInterest;
+            let totalPayable = principal + (principal * interest / 100);
             let balance = totalPayable - paid;
-            
-            if (paid < totalPayable) {
-                document.getElementById('balanceMessage').innerHTML = `⚠️ Remaining: ₹${balance.toFixed(2)} (Short payment)`;
-                document.getElementById('confirmCloseBtn').disabled = true;
-            } else if (paid > totalPayable) {
-                document.getElementById('balanceMessage').innerHTML = `⚠️ Extra payment: ₹${(paid - totalPayable).toFixed(2)}`;
-                document.getElementById('confirmCloseBtn').disabled = true;
-            } else {
-                document.getElementById('balanceMessage').innerHTML = `✅ Exact payment!`;
-                document.getElementById('confirmCloseBtn').disabled = false;
-            }
+            if (paid < totalPayable) { document.getElementById('balanceMessage').innerHTML = `<span style="color:var(--red)">⚠️ Remaining: ₹${balance.toFixed(2)}</span>`; document.getElementById('confirmCloseBtn').disabled = true; }
+            else if (paid > totalPayable) { document.getElementById('balanceMessage').innerHTML = `<span style="color:var(--yellow)">⚠️ Extra: ₹${(paid - totalPayable).toFixed(2)}</span>`; document.getElementById('confirmCloseBtn').disabled = true; }
+            else { document.getElementById('balanceMessage').innerHTML = `<span style="color:var(--green)">✅ Exact payment!</span>`; document.getElementById('confirmCloseBtn').disabled = false; }
         }
 
-        function closeLoanModal() {
-            document.getElementById('closeLoanModal').style.display = 'none';
-        }
+        function closeLoanModal() { document.getElementById('closeLoanModal').style.display = 'none'; }
 
         async function confirmCloseLoan() {
-            let loanId = document.getElementById('closeLoanId').value;
-            let paidAmount = document.getElementById('paidAmount').value;
-            let closingDate = document.getElementById('closingDate').value;
-            
+            let loanId = document.getElementById('closeLoanId').value, paidAmount = document.getElementById('paidAmount').value, closingDate = document.getElementById('closingDate').value;
             let principal = parseFloat(document.getElementById('closePrincipal').value.replace('₹', ''));
             let interest = parseFloat(document.getElementById('closeInterest').value.replace('%', ''));
-            let totalInterest = (principal * interest / 100);
-            let totalPayable = principal + totalInterest;
-            
+            let totalInterest = (principal * interest / 100), totalPayable = principal + totalInterest;
             try {
-                const response = await fetch(`/api/Auth/loans/${loanId}/close`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        paidAmount: parseFloat(paidAmount),
-                        closingDate: closingDate,
-                        totalInterest: totalInterest,
-                        totalPayable: totalPayable
-                    })
-                });
-                
-                if (response.ok) {
-                    alert('✅ Loan closed successfully!');
-                    closeLoanModal();
-                    loadLoans();
-                } else {
-                    alert('❌ Failed to close loan');
-                }
-            } catch (error) {
-                alert('❌ Error: ' + error);
-            }
+                const response = await fetch(`/api/Auth/loans/${loanId}/close`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paidAmount: parseFloat(paidAmount), closingDate, totalInterest, totalPayable }) });
+                if (response.ok) { alert('✅ Loan closed successfully!'); closeLoanModal(); loadLoans(); }
+                else alert('❌ Failed to close loan');
+            } catch (error) { alert('❌ Error: ' + error); }
         }
 
-        // Password Edit Functions
         function showPasswordModal(id, name) {
             document.getElementById('passwordMemberId').value = id;
             document.getElementById('passwordMemberName').value = name;
@@ -1236,65 +1221,32 @@
             document.getElementById('passwordModal').style.display = 'flex';
         }
 
-        function closePasswordModal() {
-            document.getElementById('passwordModal').style.display = 'none';
-        }
+        function closePasswordModal() { document.getElementById('passwordModal').style.display = 'none'; }
 
         function checkPasswordMatch() {
-            const password = document.getElementById('newPassword').value;
-            const confirm = document.getElementById('confirmPassword').value;
-            
-            const isValid = password && confirm && (password === confirm);
-            document.getElementById('updatePasswordBtn').disabled = !isValid;
+            const p = document.getElementById('newPassword').value, c = document.getElementById('confirmPassword').value;
+            document.getElementById('updatePasswordBtn').disabled = !(p && c && p === c);
         }
 
         document.getElementById('newPassword').addEventListener('keyup', checkPasswordMatch);
         document.getElementById('confirmPassword').addEventListener('keyup', checkPasswordMatch);
 
         async function updatePassword() {
-            const id = document.getElementById('passwordMemberId').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-
-            if (!newPassword || !confirmPassword) {
-                alert('Please fill both password fields');
-                return;
-            }
-
-            if (newPassword !== confirmPassword) {
-                alert('Passwords do not match!');
-                return;
-            }
-
+            const id = document.getElementById('passwordMemberId').value, newPassword = document.getElementById('newPassword').value, confirmPassword = document.getElementById('confirmPassword').value;
+            if (!newPassword || !confirmPassword) { alert('Please fill both password fields'); return; }
+            if (newPassword !== confirmPassword) { alert('Passwords do not match!'); return; }
             try {
-                const response = await fetch(`/api/Auth/users/${id}/password`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ newPassword: newPassword })
-                });
-
-                if (response.ok) {
-                    alert('✅ Password updated successfully!');
-                    closePasswordModal();
-                } else {
-                    alert('❌ Failed to update password');
-                }
-            } catch (error) {
-                alert('❌ Server error!');
-            }
+                const response = await fetch(`/api/Auth/users/${id}/password`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ newPassword }) });
+                if (response.ok) { alert('✅ Password updated successfully!'); closePasswordModal(); }
+                else alert('❌ Failed to update password');
+            } catch (error) { alert('❌ Server error!'); }
         }
 
-        // Delete Functions
         async function deleteMember(id) {
             if (!confirm('Delete this member?')) return;
             try {
                 const response = await fetch(`/api/Auth/users/${id}`, { method: 'DELETE' });
-                if (response.ok) {
-                    alert('✅ Member deleted');
-                    loadMembers();
-                    loadDashboardStats();
-                    loadEMIByMonth();
-                }
+                if (response.ok) { alert('✅ Member deleted'); loadMembers(); loadDashboardStats(); loadEMIByMonth(); }
             } catch (e) { alert('❌ Error'); }
         }
 
@@ -1302,80 +1254,40 @@
             if (!confirm('Delete this loan?')) return;
             try {
                 const response = await fetch(`/api/Auth/loans/${id}`, { method: 'DELETE' });
-                if (response.ok) {
-                    alert('✅ Loan deleted');
-                    loadLoans();
-                    loadDashboardStats();
-                }
+                if (response.ok) { alert('✅ Loan deleted'); loadLoans(); loadDashboardStats(); }
             } catch (e) { alert('❌ Error'); }
         }
 
-        // Search Loans Function
         function searchLoans() {
             let term = document.getElementById('loanSearch').value.toLowerCase();
             let tbody = document.querySelector('#loansTable tbody');
-            
             if (!tbody) return;
-            
-            if (term === '') {
-                displayLoans();
-                return;
-            }
-            
-            let filtered = loans.filter(l => 
-                (l.memberName && l.memberName.toLowerCase().includes(term))
-            );
-            
+            if (term === '') { displayLoans(); return; }
+            let filtered = loans.filter(l => l.memberName && l.memberName.toLowerCase().includes(term));
             tbody.innerHTML = '';
             filtered.forEach(l => {
                 let statusClass = l.isClosed ? 'info' : (l.status === 'Active' ? 'success' : 'warning');
                 let statusText = l.isClosed ? 'Closed' : l.status;
-                tbody.innerHTML += `<tr>
-                    <td>${l.loanId}</td>
-                    <td>${l.memberName}</td>
-                    <td>₹${l.amount}</td>
-                    <td>${l.interest}%</td>
-                    <td>${l.term} months</td>
-                    <td>${l.startDate}</td>
-                    <td>${l.endDate}</td>
-                    <td>₹${l.paidAmount || 0}</td>
-                    <td><span class="badge-${statusClass}">${statusText}</span></td>
-                    <td>
-                        ${!l.isClosed ? 
-                            `<button class="btn btn-success" onclick="showCloseLoanModal(${l.loanId}, '${l.memberName}', ${l.amount}, ${l.interest})">✅ Close</button>` : 
-                            `<button class="btn btn-info" onclick="downloadReceipt('loan', ${l.loanId})">📥 Receipt</button>`
-                        }
-                        <button class="btn btn-danger" onclick="deleteLoan(${l.loanId})">🗑️ Delete</button>
-                    </td>
-                </tr>`;
+                tbody.innerHTML += `<tr><td><strong>${l.loanId}</strong></td><td><strong>${l.memberName}</strong></td><td>₹${l.amount}</td><td><span class="badge-info">${l.interest}%</span></td><td>${l.term} mo</td><td>${l.startDate}</td><td>${l.endDate}</td><td>₹${l.paidAmount || 0}</td><td><span class="badge-${statusClass}">${statusText}</span></td><td>${!l.isClosed ? `<button class="btn btn-success" onclick="showCloseLoanModal(${l.loanId}, '${l.memberName}', ${l.amount}, ${l.interest})">✅ Close</button>` : `<button class="btn btn-info" onclick="downloadReceipt('loan', ${l.loanId})">📥 Receipt</button>`}<button class="btn btn-danger" onclick="deleteLoan(${l.loanId})">🗑️</button></td></tr>`;
             });
-            
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:30px;">No loans found</td></tr>';
-            }
+            if (filtered.length === 0) tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No loans found</td></tr>';
         }
 
-        // Report Function
         function generateReport(type) {
             let total = 0, paid = 0;
-            emiMonthlyData.forEach(e => {
-                total += 1000;
-                paid += e.paid_amount || 0;
-            });
+            emiMonthlyData.forEach(e => { total += 1000; paid += e.paid_amount || 0; });
             document.getElementById('reportContent').innerHTML = `
-                <h4>${type} Report</h4>
-                <table style="width:100%; margin-top:15px;">
-                    <tr><th style="padding:10px; background:#f8f9fa;">Total Members</th><td style="padding:10px;">${members.length}</td></tr>
-                    <tr><th style="padding:10px; background:#f8f9fa;">Total EMI</th><td style="padding:10px;">₹${total}</td></tr>
-                    <tr><th style="padding:10px; background:#f8f9fa;">Collected</th><td style="padding:10px;">₹${paid}</td></tr>
-                    <tr><th style="padding:10px; background:#f8f9fa;">Pending</th><td style="padding:10px;">₹${total - paid}</td></tr>
+                <h4 style="font-family:Syne;font-size:14px;margin-bottom:14px;color:var(--text2);">${type.charAt(0).toUpperCase()+type.slice(1)} Report</h4>
+                <table style="width:100%;">
+                    <tr><th style="padding:12px 14px;">Total Members</th><td style="padding:12px 14px;">${members.length}</td></tr>
+                    <tr><th style="padding:12px 14px;">Total EMI</th><td style="padding:12px 14px;">₹${total}</td></tr>
+                    <tr><th style="padding:12px 14px;">Collected</th><td style="padding:12px 14px;">₹${paid}</td></tr>
+                    <tr><th style="padding:12px 14px;">Pending</th><td style="padding:12px 14px;">₹${total - paid}</td></tr>
                 </table>`;
         }
 
-        // Section Navigation
         function showSection(section) {
-            const sections = ['dashboard', 'members', 'loans', 'emi', 'monthly', 'reports'];
-            sections.forEach(s => {
+            ['dashboard','members','loans','emi','monthly','reports'].forEach(s => {
                 let el = document.getElementById(s + '-section');
                 if (el) el.style.display = 'none';
             });
@@ -1384,27 +1296,15 @@
             event.currentTarget.classList.add('active');
             if (section == 'monthly' && document.getElementById('monthYear').value) loadMonthlyCollection();
             if (section == 'emi') loadEMIByMonth();
-            if (section == 'reports') {
-                loadChart();
-                generateReport('monthly');
-            }
+            if (section == 'reports') { loadChart(); generateReport('monthly'); }
         }
 
-        // Close Modals
         function closeModals() {
-            document.getElementById('addMemberModal').style.display = 'none';
-            document.getElementById('addLoanModal').style.display = 'none';
-            document.getElementById('closeLoanModal').style.display = 'none';
-            document.getElementById('paymentModal').style.display = 'none';
-            document.getElementById('passwordModal').style.display = 'none';
+            ['addMemberModal','addLoanModal','closeLoanModal','paymentModal','passwordModal'].forEach(id => document.getElementById(id).style.display = 'none');
         }
 
-        // Logout
         function logout() {
-            if (confirm('Logout?')) {
-                localStorage.removeItem('user');
-                window.location.href = '/Login.html';
-            }
+            if (confirm('Logout?')) { localStorage.removeItem('user'); window.location.href = '/Login.html'; }
         }
     </script>
 </body>
