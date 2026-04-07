@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "0p2d0P5LN0o=",
+  "dgSpecHash": "Mum6lqE9qxA=",
   "success": true,
-  "projectFilePath": "C:\\Users\\DELL\\OneDrive\\Desktop\\CreditSociety\\CreditSociety.csproj",
+  "projectFilePath": "c:\\Users\\DELL\\OneDrive\\Desktop\\CreditSociety\\CreditSociety.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\DELL\\.nuget\\packages\\dapper\\2.0.123\\dapper.2.0.123.nupkg.sha512",
     "C:\\Users\\DELL\\.nuget\\packages\\google.protobuf\\3.21.9\\google.protobuf.3.21.9.nupkg.sha512",
@@ -40,5 +40,15 @@
     "C:\\Users\\DELL\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.22\\microsoft.aspnetcore.app.ref.8.0.22.nupkg.sha512",
     "C:\\Users\\DELL\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.22\\microsoft.netcore.app.host.win-x64.8.0.22.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json.",
+      "projectPath": "c:\\Users\\DELL\\OneDrive\\Desktop\\CreditSociety\\CreditSociety.csproj",
+      "warningLevel": 1,
+      "filePath": "c:\\Users\\DELL\\OneDrive\\Desktop\\CreditSociety\\CreditSociety.csproj",
+      "targetGraphs": []
+    }
+  ]
 }
