@@ -1,16 +1,324 @@
-# .NET Core
-bin/
-obj/
-*.user
-*.suo
-*.userprefs
-.vs/
-.vscode/
+Assignment 1: Employee Management System Database Creation
+Objective
+Create a MySQL database for an Employee Management System by designing and implementing the required tables with appropriate constraints.
 
-# Database connection strings
-appsettings.json
-appsettings.Development.json
+Scenario
+A company wants to maintain information about its employees and departments. You need to create a database structure that stores department details and employee details while maintaining proper relationships between the tables.
 
-# Logs
-*.log
-logs/
+Requirements
+Task 1: Create Database
+Create a database named EmployeeManagementDB and use it for all subsequent operations.
+
+Task 2: Create Department Table
+Create a table named Department with the following specifications:
+Column Name
+Data Type
+Constraints
+Dept_ID
+INT
+Primary Key
+Dept_Name
+VARCHAR(50)
+Not Null, Unique
+Location
+VARCHAR(50)
+Not Null
+
+
+Task 3: Create Employee Table
+Create a table named Employee with the following specifications:
+Column Name
+Data Type
+Constraints
+Emp_ID
+INT
+Primary Key
+Emp_Name
+VARCHAR(50)
+Not Null
+Salary
+DECIMAL(10,2)
+Not Null, Salary > 0
+Joining_Date
+DATE
+Not Null
+Email
+VARCHAR(100)
+Unique
+Phone
+VARCHAR(15)
+Unique
+Dept_ID
+INT
+Foreign Key referencing Department(Dept_ID)
+
+
+Task 4: Verify Table Structure
+Write SQL commands to:
+Display all tables in the database.
+Display the structure of the Department table.
+Display the structure of the Employee table.
+
+Task 5: Insert Sample Data
+Insert the following records into the Department table:
+Dept_ID
+Dept_Name
+Location
+101
+HR
+Ahmedabad
+102
+IT
+Pune
+103
+Finance
+Mumbai
+104
+Sales
+Delhi
+
+Insert at least 5 employee records into the Employee table ensuring that each employee belongs to an existing department.
+
+Task 6: Display Data
+Write SQL queries to:
+Display all records from the Department table.
+Display all records from the Employee table.
+Display only Employee Name and Salary.
+Display employees belonging to the IT department.
+
+
+
+Assignment 2: Employee Management System
+Reference Tables
+Department
+Dept_ID
+Dept_Name
+Location
+101
+HR
+Ahmedabad
+102
+IT
+Pune
+103
+Finance
+Mumbai
+104
+Sales
+Delhi
+
+Employee
+Emp_ID
+Emp_Name
+Salary
+Joining_Date
+Dept_ID
+1
+Rahul
+50000
+2022-01-15
+102
+2
+Priya
+45000
+2021-03-10
+101
+3
+Amit
+70000
+2020-07-25
+102
+4
+Neha
+60000
+2019-11-20
+103
+5
+Rohan
+55000
+2023-02-01
+104
+
+Question 1
+Perform the following operations:
+Create Department and Employee tables with proper constraints.
+Insert the given records.
+Display employee name, department name, and location.
+Find employees earning more than the average salary.
+Display the highest-paid employee from each department.
+Create a view showing Employee Name, Department Name, and Salary.
+Update salary by 10% for employees in the IT department.
+Question 2
+Perform the following:
+Find departments having more than one employee.
+Display the second highest salary.
+Show employees who joined before 2022.
+Create a stored procedure to fetch employees of a particular department.
+Delete employees with salary less than ₹50,000.
+Display total salary expenditure department-wise.
+Create an index on Employee Name.
+
+
+Assignment 3: Online Shopping Database
+Reference Tables
+Customers
+Customer_ID
+Customer_Name
+City
+1
+Arjun
+Ahmedabad
+2
+Meera
+Pune
+3
+Karan
+Mumbai
+4
+Pooja
+Delhi
+
+Products
+Product_ID
+Product_Name
+Price
+101
+Laptop
+60000
+102
+Mobile
+25000
+103
+Headphones
+3000
+104
+Smart Watch
+8000
+
+Orders
+Order_ID
+Customer_ID
+Product_ID
+Quantity
+Order_Date
+1
+1
+101
+1
+2024-01-10
+2
+2
+102
+2
+2024-01-12
+3
+1
+103
+3
+2024-01-15
+4
+3
+104
+1
+2024-01-18
+
+Question 1
+Perform the following:
+Create all tables with primary and foreign keys.
+Insert the provided records.
+Display customer name, product name, quantity, and order date.
+Calculate total amount spent by each customer.
+Find the most expensive product.
+Find customers who have placed more than one order.
+Create a view showing complete order details.
+Question 2
+Perform the following:
+Display products never ordered.
+Find the customer who spent the highest amount.
+Show monthly sales report.
+Create a stored procedure to display customer purchase history.
+Add a new column Discount to Products table.
+Apply a 5% discount to products costing more than ₹20,000.
+Display top 3 selling products.
+
+
+Assignment 4: Student Result Management System
+Reference Tables
+Students
+Student_ID
+Student_Name
+Course
+1
+Ravi
+Java
+2
+Simran
+Python
+3
+Ankit
+Java
+4
+Sneha
+Data Analyst
+
+Subjects
+Subject_ID
+Subject_Name
+101
+Core Java
+102
+MySQL
+103
+Python
+104
+Statistics
+
+Marks
+Mark_ID
+Student_ID
+Subject_ID
+Marks
+1
+1
+101
+85
+2
+1
+102
+90
+3
+2
+103
+88
+4
+3
+101
+75
+5
+4
+104
+92
+
+Question 1
+Perform the following:
+Create all tables with appropriate constraints.
+Insert all records.
+Display student name, subject name, and marks.
+Find the student with the highest marks.
+Calculate average marks subject-wise.
+Display students scoring above average marks.
+Create a view showing complete result details.
+Question 2
+Perform the following:
+Calculate percentage for each student.
+Assign grades using CASE:
+A: 90+
+B: 75–89
+C: 60–74
+D: Below 60
+Find toppers of each subject.
+Create a stored procedure to display marks of a particular student.
+Display students who have not scored in any subject.
+Create a trigger to prevent marks greater than 100.
+Generate a rank list based on total marks.
+
